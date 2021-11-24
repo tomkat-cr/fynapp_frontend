@@ -2,6 +2,9 @@ import { authenticationService } from '@/_services';
 
 export function handleResponse(response) {
     return response.text().then(text => {
+        if (!IsJsonString(text)) {
+            return Promise.reject(text);
+        }
         const data = text && JSON.parse(text);
         if (!response.ok) {
             if ([401, 403].indexOf(response.status) !== -1) {
@@ -12,22 +15,23 @@ export function handleResponse(response) {
 
             const error = (data && data.message) || response.statusText;
             return Promise.reject(error);
+        } else {
+            data.error = false;
         }
 
         return data;
     });
 }
 
-// private helper functions from fake-backend.js
-
-export function ok(body) {
-    return ({ ok: true, text: () => Promise.resolve(JSON.stringify(body)) })
+export function handleFetchError(reason) {
+    return {error: true, message: 'Connection failure', reason: reason};
 }
 
-export function unauthorised() {
-    return ({ status: 401, text: () => Promise.resolve(JSON.stringify({ message: 'Unauthorised' })) })
-}
-
-export function error(message) {
-    return ({ status: 400, text: () => Promise.resolve(JSON.stringify({ message })) })
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
 }

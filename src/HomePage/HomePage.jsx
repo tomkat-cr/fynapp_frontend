@@ -8,25 +8,40 @@ class HomePage extends React.Component {
 
         this.state = {
             currentUser: authenticationService.currentUserValue,
-            users: null
+            users: null,
+            error: null
         };
     }
 
     componentDidMount() {
-        userService.getAll().then(users => this.setState({ users }));
+        userService.getAll()
+            .then(
+                users => this.setState({ users }),
+                error => this.setState({ error })
+            )
+        ;
     }
 
     render() {
-        const { currentUser, users } = this.state;
-        return (
+        const { currentUser, users, error } = this.state;
+
+    let errorMessage = null;
+    if((users && users.error) || error) {
+        errorMessage = ((users && users.error) ? users.message : error);
+        users.users = [];
+    }
+    return (
             <div>
                 <h1>Hi {currentUser.firstName}!</h1>
                 <p>You're logged in with React & JWT!!</p>
                 <h3>Users from secure api end point:</h3>
-                {users &&
+                {errorMessage &&
+                    <div className={'alert alert-danger'}>{errorMessage}</div>
+                }
+                {!errorMessage && users &&
                     <ul>
                         {users.users.map(user =>
-                            <li key={user._id.$oid}>{user.firstname} {user.lastname}</li>
+                            <li key={userService.getUserId(user._id)}>{user.firstname} {user.lastname}</li>
                         )}
                     </ul>
                 }
