@@ -1,7 +1,9 @@
 import { BehaviorSubject } from 'rxjs';
 
 import config from 'config';
-import { handleResponse, Base64, ok, error, unauthorised } from '@/_helpers';
+
+import { handleResponse, handleFetchError, Base64 } from '@/_helpers';
+import { userService } from '@/_services';
 
 const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
 
@@ -13,43 +15,30 @@ export const authenticationService = {
 };
 
 function login(username, password) {
-    // const requestOptions = {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ username, password })
-    // };
     const requestOptions = {
         method: 'POST',
-        //headers: { "Authorization":  "Basic " + btoa(username + ":" + password) },
         headers: { "Authorization":  "Basic " + Base64.btoa(username + ":" + password) },
-        // headers: { "Authorization":  "Basic " + (username + ":" + password).toString('base64') },
-        // body: JSON.stringify({})
     };
 
-    // return fetch(`${config.apiUrl}/users/authenticate`, requestOptions)
     return fetch(`${config.apiUrl}/users/login`, requestOptions)
-        .then(handleResponse)
-        // .then(user => {
+        .then(handleResponse, handleFetchError)
         .then(res => {
-console.log("RESPONSE RECEIVED: ", res);
-console.log("Token: ", res.token);
+            if(res.error) {
+                return Promise.reject(res.message);
+            }
             let user = {
-                id: 0,
-                username: username,
-                firstName: 'firstName',
-                lastName: 'lastName',
+                id: userService.getUserId(res._id),
+                username: res.username,
+                email: res.email,
+                firstName: res.firstname,
+                lastName: res.lastname,
                 token: res.token
             };
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('currentUser', JSON.stringify(user));
             currentUserSubject.next(user);
-            return ok(user);
-        })
-        .catch((err) => {  
-console.log("BACKEND ERROR: ", err);
-            return error(err + ' [BE-E010]');
-        })
-        ;
+            return user;
+        });
 }
 
 function logout() {
