@@ -3,3 +3,4 @@ export * from './auth-header';
 export * from './handle-response';
 export * from './history';
 export * from './base64';
+export * from './error-and-reenter';

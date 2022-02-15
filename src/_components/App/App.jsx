@@ -4,20 +4,49 @@ import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
 
 import { history } from '@/_helpers';
 import { authenticationService } from '@/_services';
-import { PrivateRoute } from '@/_components';
-import { HomePage } from '@/HomePage';
-import { UsersPage } from '@/SuperAdminOptions';
-import { LoginPage } from '@/LoginPage';
+import { PrivateRoute } from '@/_components/Helpers';
+import { HomePage } from '@/_components/HomePage';
+import { UsersEditorData } from '@/_components/SuperAdminOptions';
+import { LoginPage } from '@/_components/LoginPage';
 
 class App extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            currentUser: null
+            currentUser: null,
+            // id: null,
+            // action: null,
+            // users: null,
+            // user: null,
+            // error: null
         };
     }
 
+    handleEditClick = (e) => {
+        this.setState({
+          id: e.target.value,
+          action: 'edit'
+        });
+        console.log('handleEditClick - id: '+this.state.id+' | action: '+this.state.action);
+      };
+
+    handleReadClick = (e) => {
+        this.setState({
+          id: e.target.value,
+          action: 'read'
+        });
+        console.log('handleReadClick - id: '+this.state.id+' | action: '+this.state.action);
+      };
+
+    handleDeleteClick = (e) => {
+        this.setState({
+          id: e.target.value,
+          action: 'delete'
+        });
+        console.log('handleDeleteClick - id: '+this.state.id+' | action: '+this.state.action);
+      };
+    
     componentDidMount() {
         authenticationService.currentUser.subscribe(
             x => this.setState({ currentUser: x })
@@ -31,6 +60,7 @@ class App extends React.Component {
 
     render() {
         const { currentUser } = this.state;
+        let usersEditorData = UsersEditorData();
         return (
             <Router history={history}>
                 <div>
@@ -63,9 +93,15 @@ class App extends React.Component {
                         <div className="container">
                             <div className="row">
                                 <div className="col-md-6 offset-md-3">
-                                    <PrivateRoute exact path="/" component={HomePage} />
-                                    <PrivateRoute exact path="/users" component={UsersPage} />
-                                    <Route path="/login" component={LoginPage} />
+                                    <div>
+                                        <PrivateRoute exact path="/" component={HomePage} />
+                                    </div>
+                                    <div>
+                                    </div>
+                                    <div>
+                                        <Route path="/login" component={LoginPage} />
+                                    </div>
+                                    { editorRoutes(usersEditorData) }
                                 </div>
                             </div>
                         </div>
@@ -74,6 +110,17 @@ class App extends React.Component {
             </Router>
         );
     }
+}
+
+
+function editorRoutes(editor) {
+    return (
+        <div>
+            <PrivateRoute exact path={editor.baseUrl} component={editor.component} />
+            {/* <PrivateRoute exact path={editor.baseUrl+"/:action"} component={editor.list} /> */}
+            {/* <PrivateRoute exact path={editor.baseUrl+"/:action/:id"} component={editor.list} /> */}
+        </div>
+    );
 }
 
 export { App }; 

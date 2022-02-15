@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import config from 'config';
 
 import { handleResponse, handleFetchError, Base64 } from '@/_helpers';
-import { userService } from '@/_services';
+import { dbApiService } from '@/_services';
 
 const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
 
@@ -19,6 +19,7 @@ function login(username, password) {
         method: 'POST',
         headers: { "Authorization":  "Basic " + Base64.btoa(username + ":" + password) },
     };
+    let userService = new dbApiService({url: 'users'})
 
     return fetch(`${config.apiUrl}/users/login`, requestOptions)
         .then(handleResponse, handleFetchError)
@@ -27,7 +28,7 @@ function login(username, password) {
                 return Promise.reject(res.message);
             }
             let user = {
-                id: userService.getUserId(res._id),
+                id: userService.convertId(res._id),
                 username: res.username,
                 email: res.email,
                 firstName: res.firstname,

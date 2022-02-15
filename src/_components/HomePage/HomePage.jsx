@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { authenticationService } from '@/_services';
+import { errorAndReEnter } from '@/_helpers';
 
 class HomePage extends React.Component {
     constructor(props) {
@@ -19,7 +20,7 @@ class HomePage extends React.Component {
             <div>
                 <h1>Hi {currentUser.firstName}!</h1>
                 {error &&
-                    <div className={'alert alert-danger'}>{error}</div>
+                    errorAndReEnter(errorMessage)
                 }
             </div>
         );
