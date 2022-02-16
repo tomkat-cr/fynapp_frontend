@@ -7,6 +7,7 @@ import { authenticationService } from '@/_services';
 import { PrivateRoute } from '@/_components/Helpers';
 import { HomePage } from '@/_components/HomePage';
 import { UsersEditorData } from '@/_components/SuperAdminOptions';
+// import { GenericEditor } from '@/_components/SuperAdminOptions';
 import { LoginPage } from '@/_components/LoginPage';
 
 class App extends React.Component {
@@ -23,29 +24,29 @@ class App extends React.Component {
         };
     }
 
-    handleEditClick = (e) => {
-        this.setState({
-          id: e.target.value,
-          action: 'edit'
-        });
-        console.log('handleEditClick - id: '+this.state.id+' | action: '+this.state.action);
-      };
+    // handleEditClick = (e) => {
+    //     this.setState({
+    //       id: e.target.value,
+    //       action: 'edit'
+    //     });
+    //     console.log('handleEditClick - id: '+this.state.id+' | action: '+this.state.action);
+    //   };
 
-    handleReadClick = (e) => {
-        this.setState({
-          id: e.target.value,
-          action: 'read'
-        });
-        console.log('handleReadClick - id: '+this.state.id+' | action: '+this.state.action);
-      };
+    // handleReadClick = (e) => {
+    //     this.setState({
+    //       id: e.target.value,
+    //       action: 'read'
+    //     });
+    //     console.log('handleReadClick - id: '+this.state.id+' | action: '+this.state.action);
+    //   };
 
-    handleDeleteClick = (e) => {
-        this.setState({
-          id: e.target.value,
-          action: 'delete'
-        });
-        console.log('handleDeleteClick - id: '+this.state.id+' | action: '+this.state.action);
-      };
+    // handleDeleteClick = (e) => {
+    //     this.setState({
+    //       id: e.target.value,
+    //       action: 'delete'
+    //     });
+    //     console.log('handleDeleteClick - id: '+this.state.id+' | action: '+this.state.action);
+    //   };
     
     componentDidMount() {
         authenticationService.currentUser.subscribe(

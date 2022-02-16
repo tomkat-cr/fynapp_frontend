@@ -15,15 +15,19 @@ export const authenticationService = {
 };
 
 function login(username, password) {
+    console.log('\\\/// authenticationService.login() | Begin...');
     const requestOptions = {
         method: 'POST',
         headers: { "Authorization":  "Basic " + Base64.btoa(username + ":" + password) },
     };
     let userService = new dbApiService({url: 'users'})
+    console.log('\\\/// authenticationService.login() | userService instanciated | config.apiUrl: ' + config.apiUrl);
 
     return fetch(`${config.apiUrl}/users/login`, requestOptions)
         .then(handleResponse, handleFetchError)
         .then(res => {
+    console.log('\\\/// authenticationService.login() | res');
+    console.log(res);
             if(res.error) {
                 return Promise.reject(res.message);
             }
