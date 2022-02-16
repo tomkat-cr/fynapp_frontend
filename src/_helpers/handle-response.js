@@ -16,7 +16,15 @@ export function handleResponse(response) {
             const error = (data && data.message) || response.statusText;
             return Promise.reject(error);
         } else {
-            data.error = false;
+            if(typeof data.error == 'undefined') {
+                data.error = false;
+            }
+            if(typeof data.error_message != 'undefined') {
+                data.message = data.error_message;
+            }
+            if(typeof data.resultset != 'undefined') {
+                data.resultset = JSON.parse(data.resultset);
+            }
         }
 
         return data;

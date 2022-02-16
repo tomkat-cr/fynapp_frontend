@@ -314,7 +314,7 @@ export class UsersList extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {listingDataset.users.map(user => 
+                            {listingDataset.resultset.map(user => 
                                 <tr key={rowId = this.dbService.convertId(user._id)}>
                                 {/* <td><Link to={{pathname: this.editor.baseUrl+"/read/"+rowId, state: {action: ACTION_READ, id: rowId}}} >{i++}</Link></td> */}
                                 <td>
@@ -394,7 +394,7 @@ export class UsersList extends React.Component {
 // console.log(currentRowDataset);
 
 //         let editorFlags = this.getEditorFlags(action);
-//         let rowId = this.dbService.convertId(currentRowDataset.user._id);
+//         let rowId = this.dbService.convertId(currentRowDataset.resultset._id);
 
 //         return (
 //             <div>
@@ -453,8 +453,8 @@ export class UsersList extends React.Component {
 //                                 <input
 //                                     type="text"
 //                                     name="firstname"
-//                                     defaultValue={currentRowDataset.user.firstname}
-//                                     // value={currentRowDataset.user.firstname}
+//                                     defaultValue={currentRowDataset.resultset.firstname}
+//                                     // value={currentRowDataset.resultset.firstname}
 //                                     // readOnly={(!editorFlags.isEdit)}
 //                                     onChange={this.setFieldValue}
 //                                 />
@@ -462,24 +462,24 @@ export class UsersList extends React.Component {
 //                             </tr>
 //                             <tr>
 //                             <td>Last Name</td>
-//                             {/* <td>{currentRowDataset.user.lastname}</td> */}
+//                             {/* <td>{currentRowDataset.resultset.lastname}</td> */}
 //                             <td>
 //                                 <input
 //                                     type="text"
 //                                     name="lastname"
-//                                     defaultValue={currentRowDataset.user.lastname}
+//                                     defaultValue={currentRowDataset.resultset.lastname}
 //                                     onChange={this.setFieldValue}
 //                                     />
 //                             </td>
 //                             </tr>
 //                             <tr>
 //                             <td>Username</td>
-//                             {/* <td>{currentRowDataset.user.email}</td> */}
+//                             {/* <td>{currentRowDataset.resultset.email}</td> */}
 //                             <td>
 //                                 <input
 //                                     type="text"
 //                                     name="email"
-//                                     defaultValue={currentRowDataset.user.email}
+//                                     defaultValue={currentRowDataset.resultset.email}
 //                                     onChange={this.setFieldValue}
 //                                     />
 //                             </td>
@@ -533,7 +533,7 @@ export class UsersList extends React.Component {
             currentRowDataset = this.state.currentRowDataset;
             error = this.state.error;
             errorMessage = this.getErrorMessage(currentRowDataset, error);
-            rowId = (currentRowDataset && !errorMessage) ? this.dbService.convertId(currentRowDataset.user._id) : null;
+            rowId = (currentRowDataset && !errorMessage) ? this.dbService.convertId(currentRowDataset.resultset._id) : null;
         }
 
         console.log('editAction | action:' + action + ' | rowId: ' + rowId);
@@ -549,7 +549,7 @@ export class UsersList extends React.Component {
                 {errorMessage &&
                     errorAndReEnter(errorMessage)
                 }
-                {!errorMessage && currentRowDataset && this.editForm_Fornik(action, currentRowDataset.user, rowId)
+                {!errorMessage && currentRowDataset && this.editForm_Fornik(action, currentRowDataset.resultset, rowId)
                 }
             </div>
         );

@@ -28,12 +28,12 @@ function login(username, password) {
                 return Promise.reject(res.message);
             }
             let user = {
-                id: userService.convertId(res._id),
-                username: res.username,
-                email: res.email,
-                firstName: res.firstname,
-                lastName: res.lastname,
-                token: res.token
+                id: userService.convertId(res.resultset._id),
+                username: res.resultset.username,
+                email: res.resultset.email,
+                firstName: res.resultset.firstname,
+                lastName: res.resultset.lastname,
+                token: res.resultset.token
             };
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('currentUser', JSON.stringify(user));
