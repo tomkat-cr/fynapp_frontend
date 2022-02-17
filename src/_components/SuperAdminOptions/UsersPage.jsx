@@ -5,6 +5,8 @@
 // import * as Yup from 'yup';
 
 import { GenericEditor } from '@/_services';
+import { WEIGHT_UNITS, HEIGHT_UNITS } from '@/_constants';
+
 
 export function UsersEditorData() {
     return {
@@ -26,21 +28,24 @@ export function UsersEditorData() {
                 required: true,
                 label: 'First Name',
                 type: 'text',
-                readonly: false
+                readonly: false,
+                listing: true
             }, 
             {
                 name: 'lastname',
                 required: true,
                 label: 'Last Name',
                 type: 'text',
-                readonly: false
+                readonly: false,
+                listing: true
             },
             {
                 name: 'email',
                 required: true,
                 label: 'Email',
                 type: 'email',
-                readonly: false
+                readonly: false,
+                listing: true
             },
             {
                 name: 'training_days',
@@ -75,7 +80,7 @@ export function UsersEditorData() {
                 required: true,
                 label: 'Height Unit',
                 type: 'select',
-                select_elements: {},
+                select_elements: HEIGHT_UNITS,
                 readonly: false
             },
             {
@@ -90,17 +95,18 @@ export function UsersEditorData() {
                 required: true,
                 label: 'Weight Unit',
                 type: 'select',
-                select_elements: {},
+                select_elements: WEIGHT_UNITS,
                 readonly: false
             },
             {
                 name: 'creation_date',
                 required: true,
-                label: 'creation_date',
+                label: 'Creation Date',
                 type: 'date',
                 readonly: false,
                 hidden: true,
-                default_value: 'current_timestamp'
+                default_value: 'current_timestamp',
+                listing: true
             },
         ]
     }

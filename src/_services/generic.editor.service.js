@@ -1,9 +1,7 @@
 import React from 'react';
-// import { Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-// import { Table, Button } from 'semantic-ui-react';
 import { Table } from 'react-bootstrap'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -149,40 +147,13 @@ export class GenericEditor extends React.Component {
     componentDidCatch() {
         console.log('1.2 >> componentDidCatch de UsersList() - id: '+this.state.id);
     }
-             
-    // componentDidUpdate(prevProps, prevState) {
-    //     console.log('1.3 >> componentDidUpdate de UsersList()');
-    //     console.log('this.state');
-    //     console.log(this.state);
-    //     console.log('prevState');
-    //     console.log(prevState);
-    //     console.log('this.props');
-    //     console.log(this.props);
-    //     console.log('prevProps');
-    //     console.log(prevProps);
-    //     // let refreshed = id != this.state.id || action != this.state.action;
-    //     // let refreshed = this.props.history.location.pathname != this.props.location.pathname;
-
-    //     // let refreshed = prevState.id != this.state.id || prevState.action != this.state.action;
-    //     // if(refreshed) {
-    //         this.dbRetrieve(this.state);
-    //     // }
-    // }
-             
+                          
     componentWillUnmount() {
         console.log('1.4 >> componentWillUnmount de UsersList() - id: '+this.state.id);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         console.log('1.5 >> shouldComponentUpdate de UsersList() - id: '+this.state.id+' | action: '+this.state.action);
-        // console.log('this.state');
-        // console.log(this.state);
-        // console.log('nextState');
-        // console.log(nextState);
-        // console.log('this.props');
-        // console.log(this.props);
-        // console.log('nextProps');
-        // console.log(nextProps);
 
         // let refreshed = nextState.id != this.state.id || nextState.action != this.state.action || this.state.listingDataset == null;
         let refreshed = nextState != this.state;
@@ -299,11 +270,21 @@ export class GenericEditor extends React.Component {
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Username</th>
+                                {
+                                    Object.entries(this.editor.fieldElements).map(function(htmlElemet) {
+                                        let currentObj = htmlElemet[1];
+                                        if(typeof currentObj.listing == 'undefined') {
+                                            return; 
+                                        }
+                                        if(!currentObj.listing) {
+                                            return; 
+                                        }
+                                        return (
+                                <th>{currentObj.label}</th>
+                                        )
+                                    })
+                                }
                                 <th colSpan="2"></th>
-                                {/* <th><Link to={this.editor.baseUrl+"/new"}><FontAwesomeIcon icon="plus" /></Link></th> */}
                                 <td>
                                     <button
                                         className="btn btn-primary"
@@ -315,50 +296,54 @@ export class GenericEditor extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {listingDataset.resultset.map(user => 
-                                <tr key={rowId = this.dbService.convertId(user._id)}>
-                                {/* <td><Link to={{pathname: this.editor.baseUrl+"/read/"+rowId, state: {action: ACTION_READ, id: rowId}}} >{i++}</Link></td> */}
-                                <td>
-                                    <a
-                                        onClick={this.handleReadClick}
-                                        value={rowId}
-                                    >
-                                    {i++}
-                                    </a>
-                                </td>
-                                <td>{user.firstname}</td>
-                                <td>{user.lastname}</td>
-                                <td>{user.email}</td>
-                                {/* <td><Link to={{pathname: this.editor.baseUrl+"/read/"+rowId, state: {action: ACTION_READ, id: rowId}}} ><FontAwesomeIcon icon="eye" /></Link></td> */}
-                                <td>
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={this.handleReadClick}
-                                        value={rowId}
-                                    >
-                                    <FontAwesomeIcon icon="eye" />
-                                    </button>
-                                </td>
-                                {/* <td><Link to={{state: {action: ACTION_UPDATE, id: rowId}}} ><FontAwesomeIcon icon="edit" /></Link></td> */}
-                                <td>
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={this.handleEditClick}
-                                        value={rowId}
-                                    >
-                                    <FontAwesomeIcon icon="edit" />
-                                    </button>
-                                </td>
-                                {/* <td><Link to={{state: {action: ACTION_DELETE, id: rowId}}} ><FontAwesomeIcon icon="trash-alt" /></Link></td> */}
-                                <td>
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={this.handleDeleteClick}
-                                        value={rowId}
-                                    >
-                                    <FontAwesomeIcon icon="trash" />
-                                    </button>
-                                </td>
+                            {listingDataset.resultset.map(dbRow => 
+                                <tr key={rowId = this.dbService.convertId(dbRow._id)}>
+                                    <td>
+                                        <a onClick={this.handleReadClick} value={rowId}>
+                                        {i++}
+                                        </a>
+                                    </td>
+                                    {
+                                        Object.entries(this.editor.fieldElements).map(function(htmlElemet) {
+                                            let currentObj = htmlElemet[1];
+                                            if(typeof currentObj.listing == 'undefined') {
+                                                return; 
+                                            }
+                                            if(!currentObj.listing) {
+                                                return; 
+                                            }
+                                            return (
+                                    <td>{ dbRow[currentObj.name].toString() }</td>
+                                            )
+                                        })
+                                    }
+                                    <td>
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={this.handleReadClick}
+                                            value={rowId}
+                                        >
+                                        <FontAwesomeIcon icon="eye" />
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={this.handleEditClick}
+                                            value={rowId}
+                                        >
+                                        <FontAwesomeIcon icon="edit" />
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={this.handleDeleteClick}
+                                            value={rowId}
+                                        >
+                                        <FontAwesomeIcon icon="trash" />
+                                        </button>
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
@@ -367,142 +352,6 @@ export class GenericEditor extends React.Component {
             </div>
         );
     }
-
-/*
-<td><Link to={this.editor.baseUrl+"/read/"+rowId}><FontAwesomeIcon icon="eye" /></Link></td>
-<td><Link to={this.editor.baseUrl+"/update/"+rowId}><FontAwesomeIcon icon="edit" /></Link></td>
-<td><Link to={this.editor.baseUrl+"/remove/"+rowId}><FontAwesomeIcon icon="trash-alt" /></Link></td>
-*/
-
-//     editAction123(title, action) {
-//         const { currentRowDataset, error } = this.state;
-
-//         // let errorMessage = ((currentRowDataset && currentRowDataset.error) ? currentRowDataset.message : error ? error : null);
-//         let errorMessage = this.getErrorMessage(currentRowDataset, error);
-
-// console.log('readAction | currentRowDataset object:');
-// console.log(currentRowDataset);
-
-//         let editorFlags = this.getEditorFlags(action);
-//         let rowId = this.dbService.convertId(currentRowDataset.resultset._id);
-
-//         return (
-//             <div>
-//                 <h3>{this.editor.title + ' - ' +title}</h3>
-//                 {errorMessage &&
-//                     errorAndReEnter(errorMessage)
-//                 }
-//                 {!errorMessage && currentRowDataset &&
-//                     <Table striped bordered hover>
-//                         <thead>
-//                             <tr>
-//                                 <th colSpan="2">
-//                                     <Table striped bordered hover>
-//                                         <tbody>
-//                                             <tr>
-//                                                 <td>
-//                                                     <button
-//                                                         className="btn btn-primary"
-//                                                         onClick={this.handleNewClick}
-//                                                     >
-//                                                         <FontAwesomeIcon icon="plus" />
-//                                                     </button>
-//                                                 </td>
-//                                                 <td>
-//                                                     <button
-//                                                         className="btn btn-primary"
-//                                                         onClick={this.handleEditClick}
-//                                                         value={rowId}
-//                                                     >
-//                                                         <FontAwesomeIcon icon="edit" />
-//                                                     </button>
-//                                                 </td>
-//                                                 <td>
-//                                                     <button
-//                                                         className="btn btn-primary"
-//                                                         onClick={this.handleDeleteClick}
-//                                                         value={rowId}
-//                                                     >
-//                                                         <FontAwesomeIcon icon="trash" />
-//                                                     </button>
-//                                                 </td>
-//                                             </tr>
-//                                         </tbody>
-//                                     </Table>
-//                                 </th>
-//                             </tr>
-//                         </thead>
-//                         <tbody>
-//                             <tr>
-//                             <td>ID</td>
-//                             <td>{rowId}</td>
-//                             </tr>
-//                             <tr>
-//                             <td>First Name</td>
-//                             <td>
-//                                 <input
-//                                     type="text"
-//                                     name="firstname"
-//                                     defaultValue={currentRowDataset.resultset.firstname}
-//                                     // value={currentRowDataset.resultset.firstname}
-//                                     // readOnly={(!editorFlags.isEdit)}
-//                                     onChange={this.setFieldValue}
-//                                 />
-//                             </td>
-//                             </tr>
-//                             <tr>
-//                             <td>Last Name</td>
-//                             {/* <td>{currentRowDataset.resultset.lastname}</td> */}
-//                             <td>
-//                                 <input
-//                                     type="text"
-//                                     name="lastname"
-//                                     defaultValue={currentRowDataset.resultset.lastname}
-//                                     onChange={this.setFieldValue}
-//                                     />
-//                             </td>
-//                             </tr>
-//                             <tr>
-//                             <td>Username</td>
-//                             {/* <td>{currentRowDataset.resultset.email}</td> */}
-//                             <td>
-//                                 <input
-//                                     type="text"
-//                                     name="email"
-//                                     defaultValue={currentRowDataset.resultset.email}
-//                                     onChange={this.setFieldValue}
-//                                     />
-//                             </td>
-//                             </tr>
-//                             <tr>
-//                                 <td>
-//                                     {editorFlags.isEdit &&
-
-//                                         <button
-//                                         className="btn btn-primary"
-//                                         onClick={this.handleSaveClick}
-//                                         value={rowId}
-//                                         >
-//                                         <FontAwesomeIcon icon="check" />
-//                                         </button>
-//                                     }
-//                                 </td>
-//                                 <td>
-//                                     <button
-//                                         className="btn btn-primary"
-//                                         onClick={this.handleCancelClick}
-//                                         value={rowId}
-//                                     >
-//                                     <FontAwesomeIcon icon="list" />
-//                                     </button>
-//                                 </td>
-//                             </tr>
-//                         </tbody>
-//                     </Table>
-//                 }
-//             </div>
-//         );
-//     }
 
     editAction(title, action) {
 
@@ -519,7 +368,6 @@ export class GenericEditor extends React.Component {
             currentRowDataset = this.state.currentRowDataset;
             error = this.state.error;
             errorMessage = this.getErrorMessage(currentRowDataset, error);
-            // rowId = (currentRowDataset && !errorMessage) ? this.dbService.convertId(currentRowDataset.resultset._id) : null;
             rowId = this.getFieldElementsDbValues(currentRowDataset.resultset).id;        
         }
 
@@ -567,66 +415,48 @@ console.log(this.getFieldElementsDbValues(dataset));
             <Formik
             initialValues={
                 this.getFieldElementsDbValues(dataset)
-                // {
-                //     id: rowId,
-                //     firstname: dataset.firstname,
-                //     lastname: dataset.lastname,
-                //     email: dataset.email,
-                //     training_days: dataset.training_days,
-                //     training_hour: dataset.training_hour,
-                //     birthday: dataset.birthday,
-                //     height: dataset.height,
-                //     height_unit: dataset.height_unit,
-                //     creation_date: dataset.creation_date,
-                // }
             }
             validationSchema={Yup.object().shape(
-                this.getFieldElementsYupStringRequired(dataset)
-                // {
-                //     firstname: Yup.string().required('First name is required'),
-                //     lastname: Yup.string().required('Last name is required'),
-                //     email: Yup.string().required('Email is required'),
-                //     training_days: Yup.string().required('training_days is required'),
-                //     training_hour: Yup.string().required('training_hour is required'),
-                //     birthday: Yup.string().required('birthday is required'),
-                //     height: Yup.string().required('height is required'),
-                //     height_unit: Yup.string().required('height_unit is required'),
-                //     creation_date: Yup.string().required('creation_date is required'),
-                // }
+                this.getFieldElementsRequiredYupStype(editorFlags)
             )}
             onSubmit={(
                     // this.getFieldElementsListObj(),
-                    { 
-                        firstname, 
-                        lastname,
-                        email,
-                        training_days,
-                        training_hour,
-                        birthday,
-                        height,
-                        height_unit,
-                        weight,
-                        weight_unit,
-                        creation_date,
-                    }, 
+                    submitedtElements,
+                    // { 
+                    //     firstname, 
+                    //     lastname,
+                    //     email,
+                    //     training_days,
+                    //     training_hour,
+                    //     birthday,
+                    //     height,
+                    //     height_unit,
+                    //     weight,
+                    //     weight_unit,
+                    //     creation_date,
+                    // }, 
                     { setStatus, setSubmitting }
                 ) => {
                     setStatus();
                     console.log('BEFORE this.dbService.createUpdateDelete(action = '+action+', rowId = '+rowId+')')
+                    if(editorFlags.isCreate) {
+                        delete submitedtElements.id;
+                    }
                     this.dbService.createUpdateDelete(action, rowId,
-                        { 
-                            firstname, 
-                            lastname,
-                            email,
-                            training_days,
-                            training_hour,
-                            birthday,
-                            height,
-                            height_unit,
-                            weight,
-                            weight_unit,
-                            creation_date,
-                        }
+                        submitedtElements
+                        // {
+                        //     firstname, 
+                        //     lastname,
+                        //     email,
+                        //     training_days,
+                        //     training_hour,
+                        //     birthday,
+                        //     height,
+                        //     height_unit,
+                        //     weight,
+                        //     weight_unit,
+                        //     creation_date,
+                        // }
                     )
                     .then(
                         result => {
@@ -651,26 +481,51 @@ console.log(this.getFieldElementsDbValues(dataset));
                     <div className={'alert alert-danger'}>{message}</div>
                 }
                 {
-                    // Object.entries(this.getFieldElementsHTMLInput(dataset, errors, touched, editorFlags)).map(function(htmlElemet) {
-                    //     console.log('htmlElemet = ')
-                    //     console.log(htmlElemet)
-                    //     return htmlElemet[1]
-                    // })
-                    
                     Object.entries(this.editor.fieldElements).map(function(htmlElemet) {
                         let currentObj = htmlElemet[1];
-                        let showit = true;
-                        if(editorFlags.isCreate && currentObj.name == 'id') {
-                            showit = false;
-                        }
-                        if(showit){
-                            return (
-                                <div className="form-group">
-                                <label htmlFor={currentObj.name}>{currentObj.label}</label>
-                                <Field id={currentObj.name} name={currentObj.name} type="text" disabled={!editorFlags.isEdit || (typeof currentObj.readonly != 'undefined' && currentObj.readonly)} className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')} />
-                                <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
-                                </div>
-                            )
+                        // if(editorFlags.isCreate && currentObj.name == 'id') {
+                        //     return;
+                        // }
+                        switch(currentObj.type) {
+                            case 'select':
+                                let defaultElement = null;
+                                return (
+                                    <div className="form-group">
+                                        <Field 
+                                            name={currentObj.name}
+                                            as="select" 
+                                            disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
+                                            className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
+                                        >
+                                        {currentObj.select_elements.map((option) => (
+                                            <option
+                                                key={option.value} value={option.title} 
+                                                selected={(!defaultElement ? defaultElement='selected' : '')}
+                                            >
+                                                {option.title}
+                                            </option>
+                                        ))}
+                                        </Field>
+                                        <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
+                                    </div>
+                                );
+                            case 'text':
+                            case 'number':
+                            case 'date':
+                            case 'email':
+                            default:                                
+                                return (
+                                    <div className="form-group">
+                                        <label htmlFor={currentObj.name}>{currentObj.label}</label>
+                                        <Field 
+                                            name={currentObj.name} 
+                                            type={currentObj.type} 
+                                            disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
+                                            className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
+                                        />
+                                        <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
+                                    </div>
+                                )
                         }
                     })
                 }
@@ -696,83 +551,62 @@ console.log(this.getFieldElementsDbValues(dataset));
     }
 
     getFieldElementsListObj() {
-        // let fieldElements = this.editor.fieldElements;
-        // let fieldElementsListObj = Object.getOwnPropertyNames(fieldElements).map(function(key) {
-        let fieldElementsListObj = Object.entries(this.editor.fieldElements).map(function(key) {
-                // if(key != 'length') {
-                    // let currentObj = fieldElements[key];
-                    let currentObj = key[1];
-// console.log('getFieldElementsListObj.map -> key: ');
-// console.log(key);
-// console.log(currentObj);
-                    return currentObj.name;
-                // }
+        let fieldElementsListObj = Object.entries(this.editor.fieldElements)
+            .map(function(key) {
+                let currentObj = key[1];
+                return currentObj.name;
             }
         );
         return fieldElementsListObj
     }
 
     getFieldElementsDbValues(dataset, defaultValues = true) {
-console.log('getFieldElementsDbValues | dataset: ');
-console.log(dataset);
         let dbService = this.dbService;
         let verifyElementExistence = this.verifyElementExistence;
         let fieldElementsListObj = {};
-        Object.entries(this.editor.fieldElements).map(function(key) {
+        Object.entries(this.editor.fieldElements)
+            .map(function(key) {
                 let currentObj = key[1];
-console.log('getFieldElementsDbValues.map -> key: ');
-console.log(key);
-console.log(currentObj);
-// console.log(this);
-                let existsInDataset = verifyElementExistence(dataset, currentObj.name);
-console.log('******** fieldElementsListObj['+currentObj.name+'] -> verifyElementExistence(dataset, '+'_'+currentObj.name+' == ' + verifyElementExistence(dataset, '_'+currentObj.name))
+                // if(verifyElementExistence(dataset, currentObj.name)) {
+                //     fieldElementsListObj[currentObj.name] = dataset[currentObj.name];
+                // } else if(currentObj.type == '_id') {
+                //     if(verifyElementExistence(dataset, '_'+currentObj.name)) {
+                //         fieldElementsListObj[currentObj.name] = dbService.convertId(dataset['_'+currentObj.name])
+                //     } else if(defaultValues) {
+                //         fieldElementsListObj[currentObj.name] = 0;
+                //     }
+                // } else if(defaultValues) {
+                //     fieldElementsListObj[currentObj.name] = (currentObj.type == 'number' ? 0 : '');
+                // }
                 if(currentObj.type == '_id') {
-                    if(!existsInDataset && verifyElementExistence(dataset, '_'+currentObj.name)) {
+                    if(verifyElementExistence(dataset, '_'+currentObj.name)) {
                         fieldElementsListObj[currentObj.name] = dbService.convertId(dataset['_'+currentObj.name])
-                    } else {
-                        if(defaultValues) {
-                            fieldElementsListObj[currentObj.name] = '';
-                        }
+                    } else if(defaultValues) {
+                        fieldElementsListObj[currentObj.name] = 0;
                     }
-console.log('OJO OJO fieldElementsListObj['+currentObj.name+'] = '+fieldElementsListObj[currentObj.name]);
-                } else {
-                    if(existsInDataset) {
-                        fieldElementsListObj[currentObj.name] = dataset[currentObj.name];
-                    } else {
-                        if(defaultValues) {
-                            fieldElementsListObj[currentObj.name] = '';
-                        }
-                    }
+                } else if(verifyElementExistence(dataset, currentObj.name)) {
+                    fieldElementsListObj[currentObj.name] = dataset[currentObj.name];
+                } else if(defaultValues) {
+                    fieldElementsListObj[currentObj.name] = (currentObj.type == 'number' ? 0 : '');
                 }
-console.log('fieldElementsListObj['+currentObj.name+'] = '+fieldElementsListObj[currentObj.name]);
             }
         );
         return fieldElementsListObj
     }
 
     verifyElementExistence(dataset, element) {
-        // let existsInDataset = true;
         let existsInDataset = (typeof dataset[element] !== 'undefined');
-// console.log('dataset['+element+']: '+(typeof dataset[element]) + ' - RESULT: '+existsInDataset);
-//         try {
-//             dataset[element]
-//         // } catch (ReferenceError) {
-//         //     existsInDataset = false;
-//         // }
-//         } catch (error) {
-// console.log('verifyElementExistence - Error: '.error);
-//             existsInDataset = false;
-//         }
         return existsInDataset;
     }
 
-    getFieldElementsYupStringRequired(dataset) {
+    getFieldElementsRequiredYupStype(editorFlags) {
+        if(editorFlags.isDelete) {
+            return {};
+        }
         let fieldElementsListObj = {};
-        Object.entries(this.editor.fieldElements).map(function(key) {
+        Object.entries(this.editor.fieldElements)
+            .map(function(key) {
                 let currentObj = key[1];
-// console.log('getFieldElementsYupStringRequired.map -> key: ');
-// console.log(key);
-// console.log(currentObj);
                 if(currentObj.required) {
                     fieldElementsListObj[currentObj.name] = Yup.string().required(
                         currentObj.label + ' is required'
@@ -782,34 +616,5 @@ console.log('fieldElementsListObj['+currentObj.name+'] = '+fieldElementsListObj[
         );
         return fieldElementsListObj
     }
-
-
-//     getFieldElementsHTMLInput(dataset, errors, touched, editorFlags) {
-//         let fieldElementsListObj = Array();
-//         Object.entries(this.editor.fieldElements).map(function(key) {
-//                 let currentObj = key[1];
-// // console.log('getFieldElementsHTMLInput.map -> key: ');
-// // console.log(key);
-// // console.log(currentObj);
-//                     fieldElementsListObj = (fieldElementsListObj =>
-//                         ({arr: [...fieldElementsListObj.arr, 
-//                             (
-//                                 <div className="form-group">
-//                                 <label htmlFor={currentObj.name}>{currentObj.label}</label>
-//                                 <Field name={currentObj.name} type="text" disabled={!editorFlags.isEdit || (typeof currentObj.readonly != 'undefined' && currentObj.readonly)} className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')} />
-//                                 <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
-//                                 </div>
-//                             )
-//                         ]})
-//                     )
-//                     //     '<div className="form-group">' +
-//                     //     '<label htmlFor="'+dataset[currentObj.name]+'">' + dataset[currentObj.label] +'</label>' +
-//                     //     '<Field name="'+dataset[currentObj.name]+'" type="text" disabled={'+(!editorFlags.isEdit ? 'true' : 'false')+'} className={"form-control"' + (errors[dataset[currentObj.name]] && touched[dataset[currentObj.name]] ? ' is-invalid' : '') + '} />' +
-//                     //     '<ErrorMessage name="'+dataset[currentObj.name]+'" component="div" className="invalid-feedback" />' +
-//                     //     '</div>';
-//                 }
-//         );
-//         return fieldElementsListObj
-//     }
 
 }
