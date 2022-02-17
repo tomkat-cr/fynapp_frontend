@@ -1,6 +1,7 @@
 import { authenticationService } from '@/_services';
 
 export function handleResponse(response) {
+    console.log('..--> handleResponse() | Begin...');
     return response.text().then(text => {
         if (!IsJsonString(text)) {
             return Promise.reject(text);
@@ -16,7 +17,22 @@ export function handleResponse(response) {
             const error = (data && data.message) || response.statusText;
             return Promise.reject(error);
         } else {
-            data.error = false;
+            console.log('..--> handleResponse() | response.ok... / data =');
+            console.log(data);
+            if(typeof data.error == 'undefined') {
+                data.error = false;
+            }
+            if(typeof data.error_message != 'undefined') {
+                data.message = data.error_message;
+            }
+            if(typeof data.resultset != 'undefined' && typeof data.resultset != 'object') {
+                // When the data.resultset has an array of records (objects) instead of a sigle object, it comes as an encapsulated string
+                console.log('..--> handleResponse() | typeof data.resultset: ' + (typeof data.resultset) + ' | data.resultset BEFORE =');
+                console.log(data.resultset);
+                data.resultset = JSON.parse(data.resultset);
+            }
+            console.log('..--> handleResponse() | data.resultset =');
+            console.log(data.resultset);
         }
 
         return data;
