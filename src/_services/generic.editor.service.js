@@ -1,16 +1,7 @@
-import React from 'react';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-
-import { Table } from 'react-bootstrap'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import fontawesome from '@fortawesome/fontawesome'
-import { faPlus, faEye, faEdit, faTrashAlt, faCheck, faList } from '@fortawesome/fontawesome-free-solid'
-fontawesome.library.add(faPlus, faEye, faEdit, faTrashAlt, faCheck, faList);
-
-import { dbApiService, authenticationService } from '@/_services';
-import { errorAndReEnter } from '@/_helpers';
+import { errorAndReEnter } from '../_helpers';
+import { dbApiService } from '../_services';
+import { authenticationService } from '../_services';
+import { console_debug_log } from './loggin.service';
 import {    ACTION_CREATE, 
             ACTION_READ, 
             ACTION_UPDATE, 
@@ -18,20 +9,28 @@ import {    ACTION_CREATE,
             ACTION_LIST, 
             WAIT_ANIMATION_IMG, 
             INVALID_TOKEN_MSG 
-        } from '@/_constants';
+        } from '../_constants';
+import React from 'react';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { Table } from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import fontawesome from '@fortawesome/fontawesome'
+import { faPlus, faEye, faEdit, faTrashAlt, faCheck, faList } from '@fortawesome/fontawesome-free-solid'
+fontawesome.library.add(faPlus, faEye, faEdit, faTrashAlt, faCheck, faList);
 
 export class GenericEditor extends React.Component {
 
     constructor(props) {
         super(props);
         
-        console.log('Constructor | this.props:');
-        console.log(this.props);
+        console_debug_log('Constructor | this.props:');
+        console_debug_log(this.props);
 
         let id = this.props.match.params.id;
         let action = this.props.match.params.action ? this.props.match.params.action : ACTION_LIST;
 
-        console.log('constructor de UsersList() id: '+id+' | action: '+action);
+        console_debug_log('constructor de UsersList() id: '+id+' | action: '+action);
         this.state = this.initialState({id: id, action: action});
 
         this.editor = this.getEditorData();
@@ -60,11 +59,11 @@ export class GenericEditor extends React.Component {
     getEditorFlags(actionCapitalized) {
         let action = actionCapitalized.toString().toLowerCase();
         let editorFlags = {};
-        editorFlags.isEdit = (action == ACTION_UPDATE || action == ACTION_CREATE);
-        editorFlags.isCreate = (action == ACTION_CREATE);
-        editorFlags.isRead = (action == ACTION_READ);
-        editorFlags.isUpdate = (action == ACTION_UPDATE);
-        editorFlags.isDelete = (action == ACTION_DELETE);
+        editorFlags.isEdit = (action === ACTION_UPDATE || action === ACTION_CREATE);
+        editorFlags.isCreate = (action === ACTION_CREATE);
+        editorFlags.isRead = (action === ACTION_READ);
+        editorFlags.isUpdate = (action === ACTION_UPDATE);
+        editorFlags.isDelete = (action === ACTION_DELETE);
         return editorFlags;
     }
 
@@ -72,7 +71,7 @@ export class GenericEditor extends React.Component {
         return (
             (dbObject && dbObject.error) ? dbObject.message : 
                 (error) ? error : 
-                    (dbObject == INVALID_TOKEN_MSG) ? dbObject : null
+                    (dbObject === INVALID_TOKEN_MSG) ? dbObject : null
         );
     } 
 
@@ -81,7 +80,7 @@ export class GenericEditor extends React.Component {
             error: error,
         }
         , () => {
-                console.log('*** setNewError - this.state.error: ' + this.state.error)
+                console_debug_log('*** setNewError - this.state.error: ' + this.state.error)
             }
         );
     }
@@ -92,9 +91,9 @@ export class GenericEditor extends React.Component {
             id: newId
         }
         , () => {
-                console.log('*** setNewAction - this.state.action: ' + this.state.action)
-                console.log('*** setNewAction - this.state.id: '+this.state.id)
-                if(this.state.action != ACTION_CREATE) {
+                console_debug_log('*** setNewAction - this.state.action: ' + this.state.action)
+                console_debug_log('*** setNewAction - this.state.id: '+this.state.id)
+                if(this.state.action !== ACTION_CREATE) {
                     this.dbRetrieve(this.state);
                 }
             }
@@ -102,12 +101,12 @@ export class GenericEditor extends React.Component {
     }
 
     handleReadClick = (e) => {
-        console.log('handleReadClick');
+        console_debug_log('handleReadClick');
         let id = e.currentTarget.value;
-        if(typeof id == 'undefined') {
+        if(typeof id === 'undefined') {
             id = e.target.value;
         }
-        if(typeof id == 'undefined') {
+        if(typeof id === 'undefined') {
             this.setNewError('ID not found...');
         } else {
             this.setNewAction(ACTION_READ, e.currentTarget.value);
@@ -115,106 +114,112 @@ export class GenericEditor extends React.Component {
     };
 
     handleNewClick = (e) => {
-        console.log('handhandleNewClickleReadClick');
+        console_debug_log('handhandleNewClickleReadClick');
         this.setNewAction(ACTION_CREATE, null);
     };
 
     handleEditClick = (e) => {
-        console.log('handleEditClick');
+        console_debug_log('handleEditClick');
         this.setNewAction(ACTION_UPDATE, e.currentTarget.value);
     };
 
     handleDeleteClick = (e) => {
-        console.log('handleDeleteClick');
+        console_debug_log('handleDeleteClick');
         this.setNewAction(ACTION_DELETE, e.currentTarget.value);
     };
 
     handleSaveClick = (e) => {
-        console.log('handleSaveClick');
+        console_debug_log('handleSaveClick');
         this.setNewAction('save', e.currentTarget.value);
     };
 
     handleCancelClick = (e) => {
-        console.log('handleCancelClick');
+        console_debug_log('handleCancelClick');
         this.setNewAction(ACTION_LIST, null);
     };
 
     componentDidMount() {
-        console.log('1.1 >> componentDidMount de UsersList() - id: '+this.state.id+' | action: '+this.state.action);
+        console_debug_log('1.1 >> componentDidMount de UsersList() - id: '+this.state.id+' | action: '+this.state.action);
         this.dbRetrieve(this.state);
     }
  
     componentDidCatch() {
-        console.log('1.2 >> componentDidCatch de UsersList() - id: '+this.state.id);
+        console_debug_log('1.2 >> componentDidCatch de UsersList() - id: '+this.state.id);
     }
                           
     componentWillUnmount() {
-        console.log('1.4 >> componentWillUnmount de UsersList() - id: '+this.state.id);
+        console_debug_log('1.4 >> componentWillUnmount de UsersList() - id: '+this.state.id);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log('1.5 >> shouldComponentUpdate de UsersList() - id: '+this.state.id+' | action: '+this.state.action);
+        console_debug_log('1.5 >> shouldComponentUpdate de UsersList() - id: '+this.state.id+' | action: '+this.state.action);
 
-        // let refreshed = nextState.id != this.state.id || nextState.action != this.state.action || this.state.listingDataset == null;
-        let refreshed = nextState != this.state;
+        // let refreshed = nextState.id != this.state.id || nextState.action != this.state.action || this.state.listingDataset === null;
+        let refreshed = nextState !== this.state;
         if(refreshed) {
-            console.log('>>-> shouldComponentUpdate = True');
+            console_debug_log('>>-> shouldComponentUpdate = True');
             return true;
         }
         if(nextState.error) {
-            console.log('>>-> shouldComponentUpdate = True por Error');
+            console_debug_log('>>-> shouldComponentUpdate = True por Error');
             return true;
         }
-        console.log('>>-> shouldComponentUpdate = False by Default');
+        console_debug_log('>>-> shouldComponentUpdate = False by Default');
         return false;
     }
 
     dbRetrieve(newState) {
-        console.log('* * * dbRetrieve | action: '+newState.action);
+        console_debug_log('* * * dbRetrieve | action: '+newState.action);
         switch(newState.action) {
             case ACTION_READ:
             case ACTION_UPDATE:
             case ACTION_DELETE:
-                console.log('dbRetrieve GETONE - Begin... | id: '+newState.id);
+                console_debug_log('dbRetrieve GETONE - Begin... | id: '+newState.id);
                 this.dbService.getOne(newState.id)
                     .then(
                         currentRowDataset => this.setState({ currentRowDataset }),
                         error => this.setState({ error })
                     );
-                console.log('dbRetrieve GETONE - End...');
-                console.log(this.state.currentRowDataset);
-                console.log(this.state.error);
+                console_debug_log('dbRetrieve GETONE - End...');
+                console_debug_log(this.state.currentRowDataset);
+                console_debug_log(this.state.error);
                 break;
             case ACTION_LIST:
-                console.log('dbRetrieve GETALL - Begin...');
+                console_debug_log('dbRetrieve GETALL - Begin...');
                 this.dbService.getAll()
                     .then(
                         listingDataset => this.setState({ listingDataset }),
                         error => this.setState({ error })
                     );
-                console.log('dbRetrieve GETALL - End...');
-                console.log(this.state.listingDataset);
-                console.log(this.state.error);
+                console_debug_log('dbRetrieve GETALL - End...');
+                console_debug_log(this.state.listingDataset);
+                console_debug_log(this.state.error);
                 this.setState({ 
                     currentRowDataset: null
                 });
                 break;
             default:
-                console.log('dbRetrieve NOTHING...');
+                console_debug_log('dbRetrieve NOTHING...');
                 break;
         }
     }
 
     render() {
-        console.log('*/*/* UsersList-render | action: '+this.state.action+' | @--this.state.currentRowDataset: ');
-        console.log(this.state.currentRowDataset);
+        console_debug_log('*/*/* UsersList-render | action: '+this.state.action+' | @--this.state.currentRowDataset: ');
+        console_debug_log(this.state.currentRowDataset);
         if (
-            this.state.action != ACTION_LIST &&
-            this.state.action != ACTION_CREATE &&
+            this.state.action !== ACTION_LIST &&
+            this.state.action !== ACTION_CREATE &&
             this.state.currentRowDataset === null
         ) {
-            console.log('*/*/* UsersList-render | ESPERA!');
-            return null
+            console_debug_log('*/*/* UsersList-render | ESPERA!');
+            return (
+                <div>
+                    <center>
+                        <img src={WAIT_ANIMATION_IMG} alt="Wait..."/>
+                    </center>
+                </div>
+            )
         }
         switch(this.state.action) {
             case ACTION_READ:
@@ -253,8 +258,8 @@ export class GenericEditor extends React.Component {
 
         let errorMessage = this.getErrorMessage(listingDataset, error);
 
-        console.log('listAction | listingDataset object:');
-        console.log(listingDataset);
+        console_debug_log('listAction | listingDataset object:');
+        console_debug_log(listingDataset);
         
         let i = 1;
         let rowId = null;
@@ -269,23 +274,28 @@ export class GenericEditor extends React.Component {
                     <Table striped bordered hover>
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th key="#">#</th>
                                 {
-                                    Object.entries(this.editor.fieldElements).map(function(htmlElemet) {
-                                        let currentObj = htmlElemet[1];
-                                        if(typeof currentObj.listing == 'undefined') {
-                                            return; 
-                                        }
-                                        if(!currentObj.listing) {
-                                            return; 
-                                        }
-                                        return (
-                                <th>{currentObj.label}</th>
-                                        )
-                                    })
+                                    Object.entries(this.editor.fieldElements)
+                                        .filter(function(htmlElemet) {
+                                            let currentObj = htmlElemet[1];
+                                            if(typeof currentObj.listing === 'undefined') {
+                                                return false;
+                                            }
+                                            if(!currentObj.listing) {
+                                                return false;
+                                            }
+                                            return true;
+                                        })
+                                        .map(function(htmlElemet) {
+                                            let currentObj = htmlElemet[1];
+                                            return (
+                                <th key={currentObj.name}>{currentObj.label}</th>
+                                            )
+                                        })
                                 }
                                 <th colSpan="2"></th>
-                                <td>
+                                <td key="CreateButton">
                                     <button
                                         className="btn btn-primary"
                                         onClick={this.handleNewClick}
@@ -297,27 +307,31 @@ export class GenericEditor extends React.Component {
                         </thead>
                         <tbody>
                             {listingDataset.resultset.map(dbRow => 
-                                <tr key={rowId = this.dbService.convertId(dbRow._id)}>
-                                    <td>
-                                        <a onClick={this.handleReadClick} value={rowId}>
+                                (rowId = this.dbService.convertId(dbRow._id)) && 
+                                <tr key={rowId}>
+                                    <td key="#">
                                         {i++}
-                                        </a>
                                     </td>
                                     {
-                                        Object.entries(this.editor.fieldElements).map(function(htmlElemet) {
+                                        Object.entries(this.editor.fieldElements)
+                                        .filter(function(htmlElemet) {
                                             let currentObj = htmlElemet[1];
-                                            if(typeof currentObj.listing == 'undefined') {
-                                                return; 
+                                            if(typeof currentObj.listing === 'undefined') {
+                                                return false;
                                             }
                                             if(!currentObj.listing) {
-                                                return; 
+                                                return false;
                                             }
+                                            return true;
+                                        })
+                                        .map(function(htmlElemet) {
+                                            let currentObj = htmlElemet[1];
                                             return (
-                                    <td>{ dbRow[currentObj.name].toString() }</td>
+                                    <td key={currentObj.name}>{ dbRow[currentObj.name].toString() }</td>
                                             )
                                         })
                                     }
-                                    <td>
+                                    <td key="ReadButton">
                                         <button
                                             className="btn btn-primary"
                                             onClick={this.handleReadClick}
@@ -326,7 +340,7 @@ export class GenericEditor extends React.Component {
                                         <FontAwesomeIcon icon="eye" />
                                         </button>
                                     </td>
-                                    <td>
+                                    <td key="EditButton">
                                         <button
                                             className="btn btn-primary"
                                             onClick={this.handleEditClick}
@@ -335,7 +349,7 @@ export class GenericEditor extends React.Component {
                                         <FontAwesomeIcon icon="edit" />
                                         </button>
                                     </td>
-                                    <td>
+                                    <td key="DeleteButton">
                                         <button
                                             className="btn btn-primary"
                                             onClick={this.handleDeleteClick}
@@ -371,12 +385,12 @@ export class GenericEditor extends React.Component {
             rowId = this.getFieldElementsDbValues(currentRowDataset.resultset).id;        
         }
 
-        console.log('editAction | action:' + action + ' | rowId: ' + rowId);
-        console.log('editAction | error: ' + error + ' | currentRowDataset object:');
-        console.log(currentRowDataset);
-        console.log('editAction | editorFlags object:');
-        console.log(editorFlags);
-        console.log('editAction | errorMessage:' . errorMessage);
+        console_debug_log('editAction | action:' + action + ' | rowId: ' + rowId);
+        console_debug_log('editAction | error: ' + error + ' | currentRowDataset object:');
+        console_debug_log(currentRowDataset);
+        console_debug_log('editAction | editorFlags object:');
+        console_debug_log(editorFlags);
+        console_debug_log('editAction | errorMessage:' + errorMessage);
 
         return (
             <div>
@@ -393,158 +407,150 @@ export class GenericEditor extends React.Component {
     editForm_Fornik(action, dataset, message = '')  {
         
         let editorFlags = this.getEditorFlags(action);
-        let htmlElemetArray = null;
+        let initialFieldValues = this.getFieldElementsDbValues(dataset);
         
-console.log('this.getFieldElementsListObj() = ');
-console.log(this.getFieldElementsListObj());
-console.log('this.getFieldElementsDbValues(dataset) = ');
-console.log(this.getFieldElementsDbValues(dataset));
+console_debug_log('this.getFieldElementsListObj() = ');
+console_debug_log(this.getFieldElementsListObj());
+console_debug_log('this.getFieldElementsDbValues(dataset) = ');
+console_debug_log(this.getFieldElementsDbValues(dataset));
 
         let rowId = this.getFieldElementsDbValues(dataset).id;
 
         if(editorFlags.isDelete) {
             message = (message ? '<br/>' : '') + 'Are you sure to delete this element? Please confirm with the [Delete] button or [Cancel] this operation.'
         }
-        console.log('editForm_Fornik | action:' + action + ' | rowId: ' + rowId);
-        console.log('editForm_Fornik | dataset object:');
-        console.log(dataset);
-        console.log('editForm_Fornik | editorFlags object:');
-        console.log(editorFlags);
+        console_debug_log('editForm_Fornik | action:' + action + ' | rowId: ' + rowId);
+        console_debug_log('editForm_Fornik | dataset object:');
+        console_debug_log(dataset);
+        console_debug_log('editForm_Fornik | editorFlags object:');
+        console_debug_log(editorFlags);
 
         return (
             <Formik
-            initialValues={
-                this.getFieldElementsDbValues(dataset)
-            }
-            validationSchema={Yup.object().shape(
-                this.getFieldElementsRequiredYupStype(editorFlags)
-            )}
-            onSubmit={(
-                    // this.getFieldElementsListObj(),
-                    submitedtElements,
-                    // { 
-                    //     firstname, 
-                    //     lastname,
-                    //     email,
-                    //     training_days,
-                    //     training_hour,
-                    //     birthday,
-                    //     height,
-                    //     height_unit,
-                    //     weight,
-                    //     weight_unit,
-                    //     creation_date,
-                    // }, 
-                    { setStatus, setSubmitting }
-                ) => {
-                    setStatus();
-                    console.log('BEFORE this.dbService.createUpdateDelete(action = '+action+', rowId = '+rowId+')')
-                    if(editorFlags.isCreate) {
-                        delete submitedtElements.id;
-                    }
-                    this.dbService.createUpdateDelete(action, rowId,
-                        submitedtElements
-                        // {
-                        //     firstname, 
-                        //     lastname,
-                        //     email,
-                        //     training_days,
-                        //     training_hour,
-                        //     birthday,
-                        //     height,
-                        //     height_unit,
-                        //     weight,
-                        //     weight_unit,
-                        //     creation_date,
-                        // }
-                    )
-                    .then(
-                        result => {
-                            console.log('|||||\\\\\ Formik result');
-                            console.log(result);
-                            if(result && result.error) {
+                initialValues={
+                    initialFieldValues
+                }
+                validationSchema={Yup.object().shape(
+                    this.getFieldElementsRequiredYupStype(editorFlags)
+                )}
+                onSubmit={(
+                        // this.getFieldElementsListObj(),
+                        submitedtElements,
+                        { setStatus, setSubmitting }
+                    ) => {
+                        setStatus();
+                        console_debug_log('BEFORE this.dbService.createUpdateDelete(action = '+action+', rowId = '+rowId+')')
+                        if(editorFlags.isCreate) {
+                            delete submitedtElements.id;
+                        }
+                        this.dbService.createUpdateDelete(action, rowId,
+                            submitedtElements
+                        )
+                        .then(
+                            result => {
+                                console_debug_log('>>>  Formik result');
+                                console_debug_log(result);
+                                if(result && result.error) {
+                                    setSubmitting(false);
+                                    setStatus(result);
+                                } else {
+                                    this.setNewAction(ACTION_LIST, null);
+                                }
+                            },
+                            error => {
                                 setSubmitting(false);
-                                setStatus(result);
-                            } else {
-                                this.setNewAction(ACTION_LIST, null);
+                                setStatus(error);
                             }
-                        },
-                        error => {
-                            setSubmitting(false);
-                            setStatus(error);
-                        }
-                    );
-            }}
-        >{({ errors, status, touched, isSubmitting }) => (
-            <Form>
-                {message &&
-                    <div className={'alert alert-danger'}>{message}</div>
-                }
-                {
-                    Object.entries(this.editor.fieldElements).map(function(htmlElemet) {
-                        let currentObj = htmlElemet[1];
-                        // if(editorFlags.isCreate && currentObj.name == 'id') {
-                        //     return;
-                        // }
-                        switch(currentObj.type) {
-                            case 'select':
-                                let defaultElement = null;
-                                return (
-                                    <div className="form-group">
-                                        <Field 
-                                            name={currentObj.name}
-                                            as="select" 
-                                            disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
-                                            className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
+                        );
+                }}
+            >{({ errors, status, touched, isSubmitting }) => (
+                <Form>
+                    {message &&
+                        <div key="AlertMessageOnTop" className={'alert alert-danger'}>{message}</div>
+                    }
+                    {
+                        Object.entries(this.editor.fieldElements).map(function(htmlElemet) {
+                            let currentObj = htmlElemet[1];
+                            switch(currentObj.type) {
+                                case 'select':
+                                    let defaultElement = null;
+                                    return (
+                                        <div
+                                            key={currentObj.name}
+                                            className="form-group"
                                         >
-                                        {currentObj.select_elements.map((option) => (
-                                            <option
-                                                key={option.value} value={option.title} 
-                                                selected={(!defaultElement ? defaultElement='selected' : '')}
+                                            <label htmlFor={currentObj.name}>{currentObj.label}</label>
+                                            <Field 
+                                                name={currentObj.name}
+                                                as="select" 
+                                                disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
+                                                className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
                                             >
-                                                {option.title}
-                                            </option>
-                                        ))}
-                                        </Field>
-                                        <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
-                                    </div>
-                                );
-                            case 'text':
-                            case 'number':
-                            case 'date':
-                            case 'email':
-                            default:                                
-                                return (
-                                    <div className="form-group">
-                                        <label htmlFor={currentObj.name}>{currentObj.label}</label>
-                                        <Field 
-                                            name={currentObj.name} 
-                                            type={currentObj.type} 
-                                            disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
-                                            className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
-                                        />
-                                        <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
-                                    </div>
-                                )
-                        }
-                    })
-                }
-                {!editorFlags.isRead &&
+                                            {currentObj.select_elements.map((option) => (
+                                                <option
+                                                    key={option.value} value={option.value} 
+                                                    defaultValue={((editorFlags.isCreate && !defaultElement) || (!editorFlags.isCreate && defaultElement === initialFieldValues[currentObj.name]) ? defaultElement=option.value : '')}
+                                                >
+                                                    {option.title}
+                                                </option>
+                                            ))}
+                                            </Field>
+                                            <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
+                                        </div>
+                                    );
+                                case 'text':
+                                case 'number':
+                                case 'date':
+                                case 'email':
+                                default:                                
+                                    return (
+                                        <div
+                                            key={currentObj.name}
+                                            className="form-group"
+                                        >
+                                            <label htmlFor={currentObj.name}>{currentObj.label}</label>
+                                            <Field 
+                                                key={currentObj.name} 
+                                                name={currentObj.name} 
+                                                type={currentObj.type} 
+                                                disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
+                                                className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
+                                            />
+                                            <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
+                                        </div>
+                                    )
+                            }
+                        })
+                    }
+                    {!editorFlags.isRead &&
+                        <div className="form-group">
+                            <button 
+                                key="SubmitButton"
+                                type="submit"
+                                className="btn btn-primary"
+                                disabled={isSubmitting}>{editorFlags.isCreate ? 'Create' : editorFlags.isDelete ? 'Delete' : 'Update'}
+                            </button>
+                            {isSubmitting &&
+                                <img src={WAIT_ANIMATION_IMG} alt="Wait..."/>
+                            }
+                        </div>
+                    }
                     <div className="form-group">
-                        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>{editorFlags.isCreate ? 'Create' : editorFlags.isDelete ? 'Delete' : 'Update'}</button>
-                        {isSubmitting &&
-                            <img src={WAIT_ANIMATION_IMG} />
-                        }
+                        <button 
+                            key="CancelButton"
+                            type="button"
+                            className="btn btn-primary"
+                            disabled={isSubmitting}
+                            onClick={this.handleCancelClick}
+                        >
+                        Cancel
+                        </button>
                     </div>
-                }
-                <div className="form-group">
-                    <button type="button" className="btn btn-primary" disabled={isSubmitting} onClick={this.handleCancelClick} >Cancel</button>
-                </div>
-                {status &&
-                    <div className={'alert alert-danger'}>{status}</div>
-                }
-            </Form>
-        )}
+                    {status &&
+                        <div className={'alert alert-danger'}>{status}</div>
+                    }
+                </Form>
+            )}
         </Formik>
 
         );
@@ -569,16 +575,16 @@ console.log(this.getFieldElementsDbValues(dataset));
                 let currentObj = key[1];
                 // if(verifyElementExistence(dataset, currentObj.name)) {
                 //     fieldElementsListObj[currentObj.name] = dataset[currentObj.name];
-                // } else if(currentObj.type == '_id') {
+                // } else if(currentObj.type === '_id') {
                 //     if(verifyElementExistence(dataset, '_'+currentObj.name)) {
                 //         fieldElementsListObj[currentObj.name] = dbService.convertId(dataset['_'+currentObj.name])
                 //     } else if(defaultValues) {
                 //         fieldElementsListObj[currentObj.name] = 0;
                 //     }
                 // } else if(defaultValues) {
-                //     fieldElementsListObj[currentObj.name] = (currentObj.type == 'number' ? 0 : '');
+                //     fieldElementsListObj[currentObj.name] = (currentObj.type === 'number' ? 0 : '');
                 // }
-                if(currentObj.type == '_id') {
+                if(currentObj.type === '_id') {
                     if(verifyElementExistence(dataset, '_'+currentObj.name)) {
                         fieldElementsListObj[currentObj.name] = dbService.convertId(dataset['_'+currentObj.name])
                     } else if(defaultValues) {
@@ -587,8 +593,9 @@ console.log(this.getFieldElementsDbValues(dataset));
                 } else if(verifyElementExistence(dataset, currentObj.name)) {
                     fieldElementsListObj[currentObj.name] = dataset[currentObj.name];
                 } else if(defaultValues) {
-                    fieldElementsListObj[currentObj.name] = (currentObj.type == 'number' ? 0 : '');
+                    fieldElementsListObj[currentObj.name] = (currentObj.type === 'number' ? 0 : '');
                 }
+                return null;
             }
         );
         return fieldElementsListObj
@@ -612,6 +619,7 @@ console.log(this.getFieldElementsDbValues(dataset));
                         currentObj.label + ' is required'
                     )
                 }
+                return null;
             }
         );
         return fieldElementsListObj
