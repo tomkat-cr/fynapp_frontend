@@ -2,8 +2,9 @@ import React from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-import { authenticationService } from '@/_services';
-import { WAIT_ANIMATION_IMG } from '@/_constants';
+import { authenticationService } from '../../_services/authentication.service';
+import { console_debug_log } from '../../_services/loggin.service';
+import { WAIT_ANIMATION_IMG } from '../../_constants/general_constants';
 
 class LoginPage extends React.Component {
     constructor(props) {
@@ -41,6 +42,10 @@ class LoginPage extends React.Component {
                                 },
                                 error => {
                                     setSubmitting(false);
+
+                                    console_debug_log('..--> LoginPage.render.Formik() | response NO ok... / error =');
+                                    console_debug_log(error);
+                        
                                     setStatus(error);
                                 }
                             );
@@ -60,7 +65,7 @@ class LoginPage extends React.Component {
                         <div className="form-group">
                             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>Login</button>
                             {isSubmitting &&
-                                <img src={WAIT_ANIMATION_IMG} />
+                                <img src={WAIT_ANIMATION_IMG} alt="Wait..."/>
                             }
                         </div>
                         {status &&

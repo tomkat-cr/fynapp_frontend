@@ -4,8 +4,8 @@
 // import { Formik, Field, Form, ErrorMessage } from 'formik';
 // import * as Yup from 'yup';
 
-import { GenericEditor } from '@/_services';
-import { WEIGHT_UNITS, HEIGHT_UNITS } from '@/_constants';
+import { GenericEditor } from '../../_services/generic.editor.service';
+import { WEIGHT_UNITS, HEIGHT_UNITS } from '../../_constants/users_constants';
 
 
 export function UsersEditorData() {

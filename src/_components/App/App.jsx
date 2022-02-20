@@ -1,14 +1,14 @@
 import React from 'react';
-import { Router, Route, Link } from 'react-router-dom';
+import { Router, Route } from 'react-router-dom';
 import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
 
-import { history } from '@/_helpers';
-import { authenticationService } from '@/_services';
-import { PrivateRoute } from '@/_components/Helpers';
-import { HomePage } from '@/_components/HomePage';
-import { UsersEditorData } from '@/_components/SuperAdminOptions';
-// import { GenericEditor } from '@/_components/SuperAdminOptions';
-import { LoginPage } from '@/_components/LoginPage';
+import { history } from '../../_helpers';
+// import { console_debug_log } from '../../_services';
+import { authenticationService } from '../../_services';
+import { PrivateRoute } from '../../_components/Helpers/PrivateRoute';
+import { HomePage } from '../../_components/HomePage/HomePage';
+import { UsersEditorData } from '../../_components/SuperAdminOptions/UsersPage';
+import { LoginPage } from '../../_components/LoginPage/LoginPage';
 
 class App extends React.Component {
     constructor(props) {
@@ -29,7 +29,7 @@ class App extends React.Component {
     //       id: e.target.value,
     //       action: 'edit'
     //     });
-    //     console.log('handleEditClick - id: '+this.state.id+' | action: '+this.state.action);
+    //     console_debug_log('handleEditClick - id: '+this.state.id+' | action: '+this.state.action);
     //   };
 
     // handleReadClick = (e) => {
@@ -37,7 +37,7 @@ class App extends React.Component {
     //       id: e.target.value,
     //       action: 'read'
     //     });
-    //     console.log('handleReadClick - id: '+this.state.id+' | action: '+this.state.action);
+    //     console_debug_log('handleReadClick - id: '+this.state.id+' | action: '+this.state.action);
     //   };
 
     // handleDeleteClick = (e) => {
@@ -45,7 +45,7 @@ class App extends React.Component {
     //       id: e.target.value,
     //       action: 'delete'
     //     });
-    //     console.log('handleDeleteClick - id: '+this.state.id+' | action: '+this.state.action);
+    //     console_debug_log('handleDeleteClick - id: '+this.state.id+' | action: '+this.state.action);
     //   };
     
     componentDidMount() {
@@ -90,10 +90,13 @@ class App extends React.Component {
                             </Container>
                         </Navbar>
                     }
+                </div>
+                <div>
                     <div className="jumbotron">
                         <div className="container">
                             <div className="row">
-                                <div className="col-md-6 offset-md-3">
+                                {/* <div className="col-md-6 offset-md-3"> */}
+                                <div className="col-md-6">
                                     <div>
                                         <PrivateRoute exact path="/" component={HomePage} />
                                     </div>
