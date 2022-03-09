@@ -2,7 +2,7 @@
 FynApp es una aplicación para lograr objetivos de reducción de peso y mantener un mejor estilo de vida, con base en alimentación adecuada, déficit calórico y actividad física.
 2021-10-16 | CR
 
-- Frontend based on the `react-jwt-authentication-example`
+- Frontend iniitally based on the `react-jwt-authentication-example`
 
 React (without Redux) - JWT Authentication Tutorial & Example
 
@@ -17,3 +17,10 @@ The tutorial example uses Webpack 4 to transpile the React code and bundle the m
 3. Install all required npm packages by running `npm install` from the command line in the project root folder (where the package.json is located).
 4. Start the application by running `npm start` from the command line in the project root folder.
 5. Your browser should automatically open at http://localhost:8080 with the login page of the demo React JWT authentication app displayed.
+
+# NOTA:
+En situaciones normales, el frontend usa el puerto 3001 si se usa Express, o el puerto 3000 si se usa WebPack.
+
+Crear un archivo `.env` para configurar la conexion con el backend, con lo siguiente:
+
+REACT_APP_API_URL=http://localhost:5000

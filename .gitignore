@@ -41,3 +41,5 @@ typings
 dist
 build
 .env
+.env.local
+.jfrog/projects/npm.yaml
