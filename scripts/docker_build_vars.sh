@@ -6,7 +6,8 @@
 if [ "$1" != "" ]; then
     export APP_VERSION="$1";
 else
-    export APP_VERSION="`cat "`dirname "$0"`/../../version.txt"`"
+    CURRENT_DIR="`dirname "$0"`";
+    export APP_VERSION="${CURRENT_DIR}/../../version.txt"
 fi
 export DOCKER_ACCOUNT="mediabros"
 # export DOCKER_PASSWORD="xxx" # Defined on the CI/CD Secure Variables
