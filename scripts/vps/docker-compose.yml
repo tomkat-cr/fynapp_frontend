@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  fynapp_frontend:
+    container_name: fynapp_frontend
+    image: mediabros/fynapp_frontend:v${APP_VERSION}-amd64
+    ports:
+      - 3001:3001
+    expose:
+      - 3001
+    environment:
+      - REACT_APP_API_URL=$FYNAPP_REACT_APP_API_URL

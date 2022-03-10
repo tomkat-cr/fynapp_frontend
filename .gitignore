@@ -36,3 +36,10 @@ typings
 
 # Optional REPL history
 .node_repl_history
+
+# Other CR
+dist
+build
+.env
+.env.local
+.jfrog/projects/npm.yaml
