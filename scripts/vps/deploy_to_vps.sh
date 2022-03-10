@@ -35,7 +35,7 @@ if [ "$6" != "" ]; then
 fi
 
 # Variables
-SSH_CMD="ssh -p ${VPS_PORT} -i ${LOCAL_PRIVATE_KEY_PATH}"
+SSH_CMD="ssh -p ${VPS_PORT} -i ${LOCAL_PRIVATE_KEY_PATH} -oStrictHostKeyChecking=no"
 
 echo "" > .env
 echo "FYNAPP_REACT_APP_API_URL=${FYNAPP_REACT_APP_API_URL}" >> .env;

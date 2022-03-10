@@ -5,12 +5,10 @@ version: "3"
 services:
   fynapp_frontend:
     container_name: fynapp_frontend
-    # image: mediabros/fynapp_frontend:v0.1.1-amd64
     build: .
-    platform: linux/x86_64
     ports:
       - 3001:3001
     expose:
       - 3001
     environment:
-      - REACT_APP_API_URL=http://fynapp_backend:5000
+      - REACT_APP_API_URL=$REACT_APP_API_URL # http://vps.fynapp.com:5000
