@@ -21,15 +21,18 @@ module.exports = {
         }
     },
     plugins: [new HtmlWebpackPlugin({
-        template: './src/index.html'
-    })],
+        template: path.resolve(__dirname, "public", "index.html"),
+        favicon: "./public/favicon.ico",
+        filename: "index.html",
+        manifest: "./public/manifest.json",
+  })],
     devServer: {
         historyApiFallback: true
     },
     externals: {
         // global app config object
-        config: JSON.stringify({
-            apiUrl: 'http://localhost:5000'
-        })
+        // config: JSON.stringify({
+        //     apiUrl: 'http://localhost:5000',
+        // })
     }
 }

@@ -1,0 +1,14 @@
+# File: docker-compose.yml para fynapp_frontend (alone)
+# Para poder hacer pruebas del build mas rapidamente, sin tener ejecutar `docker build` que tarda mas en decirme si hay problemas con el npm install...
+version: "3"
+
+services:
+  fynapp_frontend:
+    container_name: fynapp_frontend
+    build: .
+    ports:
+      - 3001:3001
+    expose:
+      - 3001
+    environment:
+      - REACT_APP_API_URL=$REACT_APP_API_URL # http://vps.fynapp.com:5000
