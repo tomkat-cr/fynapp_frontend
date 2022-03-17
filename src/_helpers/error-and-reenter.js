@@ -1,4 +1,4 @@
-import { INVALID_TOKEN_MSG } from '../_constants/general_constants';
+import { MSG_ERROR_INVALID_TOKEN } from '../_constants/general_constants';
 import { authenticationService } from '../_services';
 import React from 'react';
 import { Button } from 'react-bootstrap';
@@ -6,7 +6,7 @@ import { history } from '.';
 
 export function logout() {
     authenticationService.logout();
-    history.push('/login');
+    history.push('/login?redirect='+window.location.pathname);
 };
 
 export function refreshPage() {
@@ -23,7 +23,7 @@ export function errorAndReEnter(errorMessage) {
 }
 
 export function errorLoginAgain(errorMessage) {
-    if(errorMessage !== INVALID_TOKEN_MSG) {
+    if(errorMessage !== MSG_ERROR_INVALID_TOKEN) {
         return (
             <div></div>
         );

@@ -1,19 +1,20 @@
 // import React from 'react';
-
 // import { Table } from 'react-bootstrap'
 // import { Formik, Field, Form, ErrorMessage } from 'formik';
 // import * as Yup from 'yup';
 
 import { GenericEditor } from '../../_services/generic.editor.service';
 import { WEIGHT_UNITS, HEIGHT_UNITS } from '../../_constants/users_constants';
+import { UsersFoodTimes } from './UsersFoodTimes';
 
+import { console_debug_log } from '../../_services/loging.service';
 
-export function UsersEditorData() {
+export function Users_EditorData() {
     return {
-        baseUrl: '/users',
+        baseUrl: 'users',
         title: 'Users',
         name: 'User',
-        component: UsersList,
+        component: Users,
         dbApiUrl: 'users',
         fieldElements: [
             {
@@ -73,7 +74,8 @@ export function UsersEditorData() {
                 required: true,
                 label: 'Height',
                 type: 'number',
-                readonly: false
+                readonly: false,
+                listing: true
             },
             {
                 name: 'height_unit',
@@ -81,7 +83,8 @@ export function UsersEditorData() {
                 label: 'Height Unit',
                 type: 'select',
                 select_elements: HEIGHT_UNITS,
-                readonly: false
+                readonly: false,
+                listing: true
             },
             {
                 name: 'weight',
@@ -108,13 +111,33 @@ export function UsersEditorData() {
                 default_value: 'current_timestamp',
                 listing: true
             },
+        ],
+        childComponents: [
+            {
+                name: 'UsersFoodTimes'
+            }
         ]
     }
 }
 
-export class UsersList extends GenericEditor {
+export class Users extends GenericEditor {
     
     getEditorData() {
-        return UsersEditorData();
+        return Users_EditorData();
     }
+
+    showChildComponents(parentData, childElement) {
+        console_debug_log('USERS showChildComponents | childElement.name: '+childElement.name);
+        switch (childElement.name) {
+            case 'UsersFoodTimes':
+                return (
+                    <UsersFoodTimes key="UsersFoodTimes"
+                        parentData={parentData} childElementData={childElement}
+                    ></UsersFoodTimes>
+                );
+            default:
+                return ('');
+        }
+    }
+
 }

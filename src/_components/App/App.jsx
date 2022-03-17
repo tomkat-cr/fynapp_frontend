@@ -4,11 +4,22 @@ import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
 
 import { history } from '../../_helpers';
 // import { console_debug_log } from '../../_services';
-import { authenticationService } from '../../_services';
 import { PrivateRoute } from '../../_components/Helpers/PrivateRoute';
+import { authenticationService } from '../../_services';
 import { HomePage } from '../../_components/HomePage/HomePage';
-import { UsersEditorData } from '../../_components/SuperAdminOptions/UsersPage';
+import { Users_EditorData } from '../SuperAdminOptions/Users';
+import { FoodMoments_EditorData } from '../SuperAdminOptions/FoodMoments';
 import { LoginPage } from '../../_components/LoginPage/LoginPage';
+
+/*
+// for AboutPopUp
+import 'bootstrap/dist/css/bootstrap.min.css';
+import LinkWrapper from '../About/LinkWrapper';
+// import {BrowserRouter} from "react-router-dom";
+import { About } from '../About/About';
+const external_link="https://reactrouter.com/web/guides/quick-start";
+const internal_link="http://localhost:3000/about"
+*/
 
 class App extends React.Component {
     constructor(props) {
@@ -16,12 +27,9 @@ class App extends React.Component {
 
         this.state = {
             currentUser: null,
-            // id: null,
-            // action: null,
-            // users: null,
-            // user: null,
-            // error: null
         };
+        // console.log('process.env');
+        // console.log(process.env);
     }
 
     // handleEditClick = (e) => {
@@ -47,7 +55,21 @@ class App extends React.Component {
     //     });
     //     console_debug_log('handleDeleteClick - id: '+this.state.id+' | action: '+this.state.action);
     //   };
-    
+
+    /*
+    AboutPopUp() {
+        return (
+            <div>
+                <LinkWrapper link={external_link}/>
+                <LinkWrapper link={internal_link}/>
+                <Route path="/about">
+                    <About/>
+                </Route>
+            </div>
+        );
+    }
+    */
+
     componentDidMount() {
         authenticationService.currentUser.subscribe(
             x => this.setState({ currentUser: x })
@@ -61,7 +83,6 @@ class App extends React.Component {
 
     render() {
         const { currentUser } = this.state;
-        let usersEditorData = UsersEditorData();
         return (
             <Router history={history}>
                 <div>
@@ -74,7 +95,8 @@ class App extends React.Component {
                                     <Nav className="me-auto">
                                         <Nav.Link href="/">Home</Nav.Link>
                                         <NavDropdown title="Admin" id="basic-nav-dropdown">
-                                            <NavDropdown.Item href="/users">Users</NavDropdown.Item>
+                                            { editorMenuOption(Users_EditorData()) }
+                                            { editorMenuOption(FoodMoments_EditorData()) }
                                         </NavDropdown>
                                     </Nav>
                                 </Navbar.Collapse>
@@ -105,8 +127,10 @@ class App extends React.Component {
                                     <div>
                                         <Route path="/login" component={LoginPage} />
                                     </div>
-                                    { editorRoutes(usersEditorData) }
+                                    { editorRoute(Users_EditorData()) }
+                                    { editorRoute(FoodMoments_EditorData()) }
                                 </div>
+                                { /* this.AboutPopUp() */ }
                             </div>
                         </div>
                     </div>
@@ -117,12 +141,18 @@ class App extends React.Component {
 }
 
 
-function editorRoutes(editor) {
+function editorRoute(editor) {
     return (
         <div>
-            <PrivateRoute exact path={editor.baseUrl} component={editor.component} />
-            {/* <PrivateRoute exact path={editor.baseUrl+"/:action"} component={editor.list} /> */}
-            {/* <PrivateRoute exact path={editor.baseUrl+"/:action/:id"} component={editor.list} /> */}
+            <PrivateRoute exact path={'/'+editor.baseUrl} component={editor.component} />
+        </div>
+    );
+}
+
+function editorMenuOption(editor) {
+    return (
+        <div>
+            <NavDropdown.Item href={'/'+editor.baseUrl}>{editor.title}</NavDropdown.Item>
         </div>
     );
 }
