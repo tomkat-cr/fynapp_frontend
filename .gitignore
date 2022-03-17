@@ -42,4 +42,5 @@ dist
 build
 .env
 .env.local
-.jfrog/projects/npm.yaml
+.jfrog/*
+venv/*

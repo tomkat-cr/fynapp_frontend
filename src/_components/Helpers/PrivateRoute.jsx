@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
-import { authenticationService } from '../../_services/authentication.service';
-import { console_debug_log } from '../../_services/loggin.service';
+import { authenticationService } from '../../_services/db.authentication.service';
+import { console_debug_log } from '../../_services/loging.service';
 
 export const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={props => {
