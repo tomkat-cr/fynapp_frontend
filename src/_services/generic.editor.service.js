@@ -896,3 +896,70 @@ export class GenericEditor extends React.Component {
     }
 
 }
+
+export class GenericSelectGenerator extends React.Component {
+
+    editor = null;
+    dbService = null;
+
+    constructor(props) {
+        super(props);
+        this.editor = this.getEditorData();
+        this.state = this.initialState();
+        this.dbService = new dbApiService({url: this.editor.dbApiUrl})
+    }
+
+    getEditorData() {
+        return {};
+    }
+
+    initialState() {
+        return {
+            db_rows: null,
+            filter: (typeof this.props.filter !== 'undefined' ? this.props.filter : null),
+            show_description: (typeof this.props.show_description !== 'undefined' ? this.props.show_description : false),
+            editor: this.editor,
+        };
+    }
+
+    componentDidMount() {
+        this.dbService.getAll()
+            .then( (listingDataset) => {
+                // console_debug_log(this.state.editor.title+'-Select | fieldName: ' + this.props.fieldName + ' | listingDataset object:');
+                // console_debug_log(listingDataset);
+                this.setState({db_rows: listingDataset});
+            })
+            .catch( (error) => {
+                console_debug_log(this.state.editor.title+'-Select | error object:');
+                console_debug_log(error);
+            });
+    }
+
+    render() {
+        if (this.state.db_rows === null) {
+            // Still not ready...
+            return ('');
+        }
+        const selectOptions = this.state.db_rows.resultset;
+        let dbService = this.dbService;
+        const {filter, show_description} = this.state;
+        return (
+            selectOptions
+                .filter((option) => (
+                    (filter === null ? true : dbService.convertId(option._id) === filter)
+                ))
+                .map((option) => {
+                    if(show_description) {
+                        return option.name;
+                    }
+                    return (
+                        <option 
+                            key={dbService.convertId(option._id)+'_key'}
+                            value={dbService.convertId(option._id)}
+                        >{option.name}
+                        </option>
+                    );
+                })
+        );
+    }
+}

@@ -19,6 +19,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ## 0.1.2 (2022-03-16)
 ---
 
+### Fixes
+Fix the 'token is invalid' change issue.
+If BE returns that msg, it'll be replaced by MSG_ERROR_SESSION_EXPIRED
+
 ### Changes
 FA-58: "restart: unless-stopped" to the VPS docker compose configuration to let the containers stay active on server reboots.
 FA-6: Create menu option and editor for food_moments.
@@ -34,6 +38,7 @@ Comment almost all the console_debug_log.
 
 ### New
 FA-33: Editor FE: add child listing to the edit screen
+FA-61: Editor FE: turn generic the select component FoodMomentsSelect
 
 
 ## 0.1.11 (2022-03-10)
