@@ -4,6 +4,7 @@ import {
     ACTION_CREATE, 
     ACTION_UPDATE, 
     ACTION_DELETE, 
+    MSG_ERROR_CONNECTION_FAIL,
 } from '../_constants/general_constants';
 
 import { BehaviorSubject } from 'rxjs';
@@ -18,13 +19,9 @@ export const authenticationService = {
 };
 
 function login(username, password) {
-    // console_debug_log('>>> authenticationService.login() | Begin...');
     let config = {
         apiUrl: process.env.REACT_APP_API_URL
     }
-    // console_debug_log('>>> authenticationService.login | process:');
-    // console_debug_log(process.env.REACT_APP_API_URL);
-
     const requestOptions = {
         method: 'POST',
         headers: { "Authorization":  "Basic " + btoa(username + ":" + password) },
@@ -32,13 +29,9 @@ function login(username, password) {
         // headers: { "Authorization":  "Basic " + Base64.btoa(username + ":" + password) },
     };
     let userService = new dbApiService({url: 'users'})
-    // console_debug_log('>>> authenticationService.login() | userService instanciated | config.apiUrl: ' + config.apiUrl);
-
     return fetch(`${config.apiUrl}/users/login`, requestOptions)
         .then(handleResponse, handleFetchError)
         .then(res => {
-    // console_debug_log('>>> authenticationService.login() | res');
-    // console_debug_log(res);
             if(res.error) {
                 return Promise.reject(res.message);
             }
@@ -66,8 +59,6 @@ function logout() {
 // -------------
 
 export function handleResponse(response) {
-    // console_debug_log('..--> handleResponse() | Begin... / response:');
-    // console_debug_log(response);
     return response.text().then(text => {
         if (!IsJsonString(text)) {
             return Promise.reject(text);
@@ -110,7 +101,7 @@ export function handleResponse(response) {
 }
 
 export function handleFetchError(reason) {
-    return {error: true, message: 'Connection failure', reason: reason};
+    return {error: true, message: MSG_ERROR_CONNECTION_FAIL, reason: reason};
 }
 
 function IsJsonString(str) {
