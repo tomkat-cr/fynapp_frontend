@@ -21,6 +21,7 @@ import {    ACTION_CREATE,
             MSG_ACTION_DELETE,
             MSG_ACTION_LIST,
             MSG_ACTION_CANCEL,
+            MSG_SELECT_AN_OPTION,
         } from '../_constants';
 
 import React from 'react';
@@ -356,11 +357,10 @@ export class GenericEditor extends React.Component {
         
         let rowIndex = 1;
         let rowId = null;
-        let getSelectDescription = null;
 
         return (
             <div>
-                <h3>{this.state.editor.title}</h3>
+                <h3>{this.state.editor.title + ' - ' + MSG_ACTION_LIST}</h3>
                 {errorMessage &&
                     errorAndReEnter(errorMessage)
                 }
@@ -409,9 +409,6 @@ export class GenericEditor extends React.Component {
                                             this.dbService.convertId(dbRow._id)
                                     )
                                 ) && 
-                                (
-                                    getSelectDescription = this.getSelectDescription
-                                ) &&
                                 <tr key={rowId}>
                                     <td key="#">
                                         {rowIndex++}
@@ -508,27 +505,11 @@ export class GenericEditor extends React.Component {
                     /* this.editForm_Fornik_Modal(action, currentRowDataset.resultset) */
                     this.editForm_Fornik_Final(action, currentRowDataset.resultset)
                 }
-                {!errorMessage && currentRowDataset && 
+                {!errorMessage && currentRowDataset && !editorFlags.isCreate &&
                     this.iterateChildComponents(currentRowDataset.resultset)
                 }
             </div>
         );
-    }
-
-    getSelectDescription(currentObj, dbRow) {
-        if(currentObj.type === 'select_component') {
-            return(
-                <currentObj.component filter={dbRow[currentObj.name].toString()} show_description={true} />
-            );
-        }
-        if (currentObj.type === 'select') {
-            return(
-                currentObj.select_elements
-                    .filter((option) => (option.value === dbRow[currentObj.name].toString()))
-                    .map((option) => option.title)
-            );
-        }
-        return dbRow[currentObj.name].toString();
     }
 
     setShowModalWindow(valueToSet) {
@@ -573,28 +554,13 @@ export class GenericEditor extends React.Component {
     }
 
     editForm_Fornik_Final(action, dataset, message = '')  {
-        
         let editorFlags = this.getEditorFlags(action);
         let initialFieldValues = this.getFieldElementsDbValues(dataset);
-        
-        // console_debug_log('this.getFieldElementsListObj() = ');
-        // console_debug_log(this.getFieldElementsListObj());
-        // console_debug_log('this.getFieldElementsDbValues(dataset) = ');
-        // console_debug_log(this.getFieldElementsDbValues(dataset));
-
-        // let rowId = initialFieldValues.id;
         let rowId = initialFieldValues[this.state.editor.primaryKeyName];
-
         if(editorFlags.isDelete) {
             // 'Are you sure to delete this element? Please confirm with the [Delete] button or [Cancel] this operation.'
             message = (message ? '<br/>' : '') + MSG_DELETE_CONFIRM;
         }
-        // console_debug_log('editForm_Fornik | action:' + action + ' | rowId: ' + rowId);
-        // console_debug_log('editForm_Fornik | dataset object:');
-        // console_debug_log(dataset);
-        // console_debug_log('editForm_Fornik | editorFlags object:');
-        // console_debug_log(editorFlags);
-
         return (
             <Formik
                 enableReinitialize={true}
@@ -643,7 +609,8 @@ export class GenericEditor extends React.Component {
                 }}
             >{({ errors, status, touched, isSubmitting }) => (
                 <Form>
-                    {message &&
+                    {
+                        message &&
                         <div key="AlertMessageOnTop" className={'alert alert-danger'}>{message}</div>
                     }
                     {
@@ -682,11 +649,9 @@ export class GenericEditor extends React.Component {
                                                 disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
                                                 className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
                                             >
-                                            {currentObj.select_elements.map((option) => (
-                                                <option
-                                                    key={option.value} value={option.value} 
-                                                >{option.title}</option>
-                                            ))}
+                                            {
+                                                putSelectOptionsFromArray(currentObj.select_elements)
+                                            }
                                             </Field>
                                             <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
                                         </div>
@@ -936,11 +901,21 @@ export class GenericSelectGenerator extends React.Component {
     }
 
     render() {
+        let getConvertedId = (id) => {
+            if (id === null || id === '') {
+                return '';
+            }
+            return dbService.convertId(id);
+        }
         if (this.state.db_rows === null) {
             // Still not ready...
             return ('');
         }
-        const selectOptions = this.state.db_rows.resultset;
+        const emptyOption = [{ _id: null, name: MSG_SELECT_AN_OPTION}]
+        const selectOptions = [
+            ...emptyOption,
+            ...this.state.db_rows.resultset
+        ];
         let dbService = this.dbService;
         const {filter, show_description} = this.state;
         return (
@@ -954,12 +929,46 @@ export class GenericSelectGenerator extends React.Component {
                     }
                     return (
                         <option 
-                            key={dbService.convertId(option._id)+'_key'}
-                            value={dbService.convertId(option._id)}
+                            key={getConvertedId(option._id)+'_key'}
+                            value={getConvertedId(option._id)}
                         >{option.name}
                         </option>
                     );
                 })
         );
     }
+}
+
+
+export function putSelectOptionsFromArray(select_array_elements, title_field_name='title', value_field_name='value') {
+    let emptyElement = {};
+    emptyElement[title_field_name] = MSG_SELECT_AN_OPTION;
+    emptyElement[value_field_name] = null;
+    const selectOptions = [
+        ...[emptyElement],
+        ...select_array_elements
+    ];
+    return selectOptions.map((option) => (
+        <option
+            key={option[value_field_name]}
+            value={option[value_field_name]} 
+        >{option[title_field_name]}</option>
+    ))
+}
+
+
+export function getSelectDescription(currentObj, dbRow) {
+    if(currentObj.type === 'select_component') {
+        return(
+            <currentObj.component filter={dbRow[currentObj.name].toString()} show_description={true} />
+        );
+    }
+    if (currentObj.type === 'select') {
+        return(
+            currentObj.select_elements
+                .filter((option) => (option.value === dbRow[currentObj.name].toString()))
+                .map((option) => option.title)
+        );
+    }
+    return dbRow[currentObj.name].toString();
 }

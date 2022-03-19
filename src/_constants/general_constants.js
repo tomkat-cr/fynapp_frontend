@@ -26,3 +26,5 @@ export const MSG_ACTION_UPDATE = 'Update';
 export const MSG_ACTION_DELETE = 'Delete';
 export const MSG_ACTION_LIST = 'Listing';
 export const MSG_ACTION_CANCEL = 'Cancel';
+export const MSG_SELECT_AN_OPTION = 'Select an option...';
+

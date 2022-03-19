@@ -6,6 +6,7 @@
 import { GenericEditor } from '../../_services/generic.editor.service';
 import { WEIGHT_UNITS, HEIGHT_UNITS } from '../../_constants/users_constants';
 import { UsersFoodTimes } from './UsersFoodTimes';
+import { UsersUserHistory } from './UsersUserHistory';
 
 import { console_debug_log } from '../../_services/loging.service';
 
@@ -115,7 +116,10 @@ export function Users_EditorData() {
         childComponents: [
             {
                 name: 'UsersFoodTimes'
-            }
+            },
+            {
+                name: 'UsersUserHistory'
+            },
         ]
     }
 }
@@ -134,6 +138,12 @@ export class Users extends GenericEditor {
                     <UsersFoodTimes key="UsersFoodTimes"
                         parentData={parentData} childElementData={childElement}
                     ></UsersFoodTimes>
+                );
+            case 'UsersUserHistory':
+                return (
+                    <UsersUserHistory key="UsersUserHistory"
+                        parentData={parentData} childElementData={childElement}
+                    ></UsersUserHistory>
                 );
             default:
                 return ('');
