@@ -1,5 +1,5 @@
 import { GenericEditor } from '../../_services/generic.editor.service';
-import { FoodMomentsSelect } from './FoodMoments';
+import { FoodMomentsSelect, FoodMomentDataPopulator } from './FoodMoments';
 
 
 export function UsersFoodTimes_EditorData() {
@@ -27,7 +27,7 @@ export function UsersFoodTimes_EditorData() {
                 label: 'Type',
                 required: true,
                 type: 'select_component',
-                // select_elements: (<FoodMomentsSelect></FoodMomentsSelect>),
+                dataPopulator: FoodMomentDataPopulator,
                 component: FoodMomentsSelect,
                 listing: true
             }, 

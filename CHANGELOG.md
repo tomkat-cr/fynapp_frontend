@@ -21,6 +21,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### Fixes
 FA-34: Editor-Fix the <select/> to assume 1st <option/> value on Create.
+FA-34: Fix the case of Formnik, <Select/> and the Promises like FoodMomentsSelect.
 FA-59: Fix when session is timeout, save the current URL and after login, redirect to it.
 Fix Uncaught ReferenceError: process is not defined.
 Fix the DEBUG env var reading renaming it to REACT_APP_DEBUG.

@@ -46,7 +46,7 @@ export function errorAndRetry(errorMessage) {
         <div>
             {errorMessageDiv(
                 (
-                    errorMessage == MSG_ERROR_INVALID_TOKEN
+                    errorMessage === MSG_ERROR_INVALID_TOKEN
                     ? MSG_ERROR_SESSION_EXPIRED
                     : errorMessage
                 )
