@@ -4,6 +4,7 @@ services:
   fynapp_frontend:
     container_name: fynapp_frontend
     image: mediabros/fynapp_frontend:v${APP_VERSION}-amd64
+    restart: unless-stopped
     ports:
       - 3001:3001
     expose:

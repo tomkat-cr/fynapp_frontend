@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { authenticationService } from '../../_services/authentication.service';
+import { authenticationService } from '../../_services/db.authentication.service';
 import { errorAndReEnter } from '../../_helpers/error-and-reenter';
 
 class HomePage extends React.Component {

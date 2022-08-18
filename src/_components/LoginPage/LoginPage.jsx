@@ -2,17 +2,26 @@ import React from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-import { authenticationService } from '../../_services/authentication.service';
-import { console_debug_log } from '../../_services/loggin.service';
+import { authenticationService } from '../../_services/db.authentication.service';
+import { getUrlParams } from '../../_helpers/url-params';
+import { console_debug_log } from '../../_services/loging.service';
 import { WAIT_ANIMATION_IMG } from '../../_constants/general_constants';
 
 class LoginPage extends React.Component {
+
+    urlParams = {}
+
     constructor(props) {
         super(props);
 
+        this.urlParams = getUrlParams(props);
+        if( typeof this.urlParams.redirect === 'undefined') {
+            this.urlParams.redirect = '/';
+        }
+
         // redirect to home if already logged in
         if (authenticationService.currentUserValue) { 
-            this.props.history.push('/');
+            this.props.history.push(this.urlParams.redirect);
         }
     }
 
@@ -37,13 +46,13 @@ class LoginPage extends React.Component {
                         authenticationService.login(username, password)
                             .then(
                                 user => {
-                                    const { from } = this.props.location.state || { from: { pathname: "/" } };
+                                    const { from } = this.props.location.state || { from: { pathname: this.urlParams.redirect } };
                                     this.props.history.push(from);
                                 },
                                 error => {
                                     setSubmitting(false);
 
-                                    console_debug_log('..--> LoginPage.render.Formik() | response NO ok... / error =');
+                                    // console_debug_log('..--> LoginPage.render.Formik() | response NO ok... / error =');
                                     console_debug_log(error);
                         
                                     setStatus(error);
