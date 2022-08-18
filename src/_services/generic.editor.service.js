@@ -21,6 +21,7 @@ import {    ACTION_CREATE,
             MSG_ACTION_DELETE,
             MSG_ACTION_LIST,
             MSG_ACTION_CANCEL,
+            MSG_SELECT_AN_OPTION,
         } from '../_constants';
 
 import React from 'react';
@@ -40,6 +41,7 @@ export class GenericEditor extends React.Component {
 
     dbService = null;
     editor = null;
+    componentSelectFieldsOptionsPromises = null;
 
     constructor(props) {
         super(props);
@@ -90,6 +92,8 @@ export class GenericEditor extends React.Component {
             parentData = this.props.parentData;
         }
         this.setParentData(parentData);
+
+        this.getComponentSelectFieldsOptions(this.editor.fieldElements);
 
         // Set initial state
         this.state = this.initialState({id: id, action: action, editor: this.editor, error: error});
@@ -236,6 +240,7 @@ export class GenericEditor extends React.Component {
     dbRetrieve(newState) {
         // console_debug_log('* * * dbRetrieve of '+this.state.editor.name+' | action: '+newState.action + ' | this.state:');
         // console_debug_log(this.state);
+        const { editor } = this.state;
 
         switch(newState.action) {
 
@@ -243,29 +248,29 @@ export class GenericEditor extends React.Component {
             case ACTION_UPDATE:
             case ACTION_DELETE:
                 let accessKeysDataScreen = {}
-                accessKeysDataScreen[this.state.editor.primaryKeyName] = newState.id;
-                accessKeysDataScreen = Object.assign({}, accessKeysDataScreen, this.state.editor.parentFilter);
-                // console_debug_log('dbRetrieve | '+this.state.editor.name+' | GETONE - Begin... | id: '+newState.id + ' | accessKeysDataScreen: ');
+                accessKeysDataScreen[editor.primaryKeyName] = newState.id;
+                accessKeysDataScreen = Object.assign({}, accessKeysDataScreen, editor.parentFilter);
+                // console_debug_log('dbRetrieve | '+editor.name+' | GETONE - Begin... | id: '+newState.id + ' | accessKeysDataScreen: ');
                 // console_debug_log(accessKeysDataScreen);
                 this.dbService.getOne(accessKeysDataScreen)
                     .then(
                         currentRowDataset => this.setState({ currentRowDataset }),
                         error => this.setState({ error })
                     );
-                // console_debug_log('dbRetrieve | '+this.state.editor.name+' | GETONE - End...');
+                // console_debug_log('dbRetrieve | '+editor.name+' | GETONE - End...');
                 break;
 
             case ACTION_LIST:
                 let accessKeysListing = {}
-                accessKeysListing = Object.assign({}, accessKeysListing, this.state.editor.parentFilter);
-                // console_debug_log('dbRetrieve | '+this.state.editor.name+' | ACTION_LIST GETALL - Begin... | accessKeysListing');
+                accessKeysListing = Object.assign({}, accessKeysListing, editor.parentFilter);
+                // console_debug_log('dbRetrieve | '+editor.name+' | ACTION_LIST GETALL - Begin... | accessKeysListing');
                 // console_debug_log(accessKeysListing);
                 this.dbService.getAll(accessKeysListing)
                     .then(
                         listingDataset => this.setState({ listingDataset }),
                         error => this.setState({ error })
                     );
-                // console_debug_log('dbRetrieve | '+this.state.editor.name+' | ACTION_LIST GETALL - End...');
+                // console_debug_log('dbRetrieve | '+editor.name+' | ACTION_LIST GETALL - End...');
                 this.setState({ 
                     currentRowDataset: null
                 });
@@ -346,7 +351,7 @@ export class GenericEditor extends React.Component {
     }
 
     listAction() {
-        const { listingDataset, error } = this.state;
+        const { listingDataset, error, editor } = this.state;
 
         let errorMessage = this.getErrorMessage(listingDataset, error);
 
@@ -356,11 +361,10 @@ export class GenericEditor extends React.Component {
         
         let rowIndex = 1;
         let rowId = null;
-        let getSelectDescription = null;
 
         return (
             <div>
-                <h3>{this.state.editor.title}</h3>
+                <h3>{editor.title + ' - ' + MSG_ACTION_LIST}</h3>
                 {errorMessage &&
                     errorAndReEnter(errorMessage)
                 }
@@ -370,7 +374,7 @@ export class GenericEditor extends React.Component {
                             <tr>
                                 <th key="#">#</th>
                                 {
-                                    Object.entries(this.state.editor.fieldElements)
+                                    Object.entries(editor.fieldElements)
                                         .filter(function(htmlElement) {
                                             let currentObj = htmlElement[1];
                                             if(typeof currentObj.listing === 'undefined') {
@@ -404,20 +408,17 @@ export class GenericEditor extends React.Component {
                                 (rowId = 
                                     (
                                         typeof dbRow._id === 'undefined' ? 
-                                            dbRow[this.state.editor.primaryKeyName]
+                                            dbRow[editor.primaryKeyName]
                                         :
                                             this.dbService.convertId(dbRow._id)
                                     )
                                 ) && 
-                                (
-                                    getSelectDescription = this.getSelectDescription
-                                ) &&
                                 <tr key={rowId}>
                                     <td key="#">
                                         {rowIndex++}
                                     </td>
                                     {
-                                        Object.entries(this.state.editor.fieldElements)
+                                        Object.entries(editor.fieldElements)
                                         .filter(function(htmlElement) {
                                             let currentObj = htmlElement[1];
                                             if(typeof currentObj.listing === 'undefined') {
@@ -474,21 +475,19 @@ export class GenericEditor extends React.Component {
     }
 
     editAction(title, action) {
-
-        let editorFlags = this.getEditorFlags(action);
-
+        const { editor } = this.state;
+        const editorFlags = this.getEditorFlags(action);
         let currentRowDataset = {
             resultset: this.getFieldElementsDbValues({})
         };
         let error = null;
         let errorMessage = null;
-        let rowId = null;
-
+        // let rowId = null;
         if(!editorFlags.isCreate) {
             currentRowDataset = this.state.currentRowDataset;
             error = this.state.error;
             errorMessage = this.getErrorMessage(currentRowDataset, error);
-            rowId = this.getFieldElementsDbValues(currentRowDataset.resultset).id; 
+            // rowId = this.getFieldElementsDbValues(currentRowDataset.resultset).id; 
         }
 
         // console_debug_log('editAction | action:' + action + ' | rowId: ' + rowId);
@@ -500,7 +499,7 @@ export class GenericEditor extends React.Component {
 
         return (
             <div>
-                <h3>{this.state.editor.title + ' - ' +title}</h3>
+                <h3>{editor.title + ' - ' +title}</h3>
                 {errorMessage &&
                     errorAndReEnter(errorMessage)
                 }
@@ -508,27 +507,11 @@ export class GenericEditor extends React.Component {
                     /* this.editForm_Fornik_Modal(action, currentRowDataset.resultset) */
                     this.editForm_Fornik_Final(action, currentRowDataset.resultset)
                 }
-                {!errorMessage && currentRowDataset && 
+                {!errorMessage && currentRowDataset && !editorFlags.isCreate &&
                     this.iterateChildComponents(currentRowDataset.resultset)
                 }
             </div>
         );
-    }
-
-    getSelectDescription(currentObj, dbRow) {
-        if(currentObj.type === 'select_component') {
-            return(
-                <currentObj.component filter={dbRow[currentObj.name].toString()} show_description={true} />
-            );
-        }
-        if (currentObj.type === 'select') {
-            return(
-                currentObj.select_elements
-                    .filter((option) => (option.value === dbRow[currentObj.name].toString()))
-                    .map((option) => option.title)
-            );
-        }
-        return dbRow[currentObj.name].toString();
     }
 
     setShowModalWindow(valueToSet) {
@@ -538,8 +521,9 @@ export class GenericEditor extends React.Component {
     }
 
     editForm_Fornik_Modal(action, dataset, message = '')  {
+        const { editor } = this.state;
         
-        if (this.state.editor.type !== 'child_listing') {
+        if (editor.type !== 'child_listing') {
             return this.editForm_Fornik_Final(action, dataset, message);
         }
 
@@ -548,7 +532,7 @@ export class GenericEditor extends React.Component {
 
         const handleClose = () => this.setShowModalWindow(false);
         // const handleShow = () => this.setShowModalWindow(true);
-        const iframeTitle = this.state.editor.title + ' Popup';
+        const iframeTitle = editor.title + ' Popup';
 
         return (
             <>
@@ -573,28 +557,29 @@ export class GenericEditor extends React.Component {
     }
 
     editForm_Fornik_Final(action, dataset, message = '')  {
-        
-        let editorFlags = this.getEditorFlags(action);
+        const { editor } = this.state;
+        const editorFlags = this.getEditorFlags(action);
         let initialFieldValues = this.getFieldElementsDbValues(dataset);
-        
-        // console_debug_log('this.getFieldElementsListObj() = ');
-        // console_debug_log(this.getFieldElementsListObj());
-        // console_debug_log('this.getFieldElementsDbValues(dataset) = ');
-        // console_debug_log(this.getFieldElementsDbValues(dataset));
-
-        // let rowId = initialFieldValues.id;
-        let rowId = initialFieldValues[this.state.editor.primaryKeyName];
-
+        let rowId = initialFieldValues[editor.primaryKeyName];
         if(editorFlags.isDelete) {
             // 'Are you sure to delete this element? Please confirm with the [Delete] button or [Cancel] this operation.'
             message = (message ? '<br/>' : '') + MSG_DELETE_CONFIRM;
         }
-        // console_debug_log('editForm_Fornik | action:' + action + ' | rowId: ' + rowId);
-        // console_debug_log('editForm_Fornik | dataset object:');
-        // console_debug_log(dataset);
-        // console_debug_log('editForm_Fornik | editorFlags object:');
-        // console_debug_log(editorFlags);
 
+        let componentSelectFieldsOptions = {};
+        this.componentSelectFieldsOptionsPromises
+            .map( (currentObj) => {
+                currentObj.promiseResult
+                    .then( (options_array) => {
+                        console_debug_log('>> componentSelectFieldsOptions['+currentObj.name+'] | options_array = ');
+                        console_debug_log(options_array);
+                        componentSelectFieldsOptions[currentObj.name] = options_array;
+                    } );
+                return null;
+            });
+        console_debug_log('>> componentSelectFieldsOptions');
+        console_debug_log(componentSelectFieldsOptions);
+    
         return (
             <Formik
                 enableReinitialize={true}
@@ -613,7 +598,7 @@ export class GenericEditor extends React.Component {
                         setStatus();
                         // console_debug_log('BEFORE this.dbService.createUpdateDelete(action = '+action+', rowId = '+rowId+')')
                         if(editorFlags.isCreate && 
-                           typeof submitedtElements.id !== 'undefined') {
+                                typeof submitedtElements.id !== 'undefined') {
                             // Removes calculated ID
                             delete submitedtElements.id;
                         }
@@ -643,104 +628,45 @@ export class GenericEditor extends React.Component {
                 }}
             >{({ errors, status, touched, isSubmitting }) => (
                 <Form>
-                    {message &&
+                    {
+                        message &&
                         <div key="AlertMessageOnTop" className={'alert alert-danger'}>{message}</div>
                     }
                     {
-                        Object.entries(this.state.editor.fieldElements).map(function(htmlElement) {
-                            let currentObj = htmlElement[1];
-                            switch(currentObj.type) {
-                                case 'select_component':
-                                    return (
-                                        <div
-                                            key={currentObj.name}
-                                            className="form-group"
-                                        >
-                                            <label htmlFor={currentObj.name}>{currentObj.label}</label>
-                                            <Field 
-                                                name={currentObj.name}
-                                                as="select" 
-                                                disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
-                                                className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
-                                            >
-                                            <currentObj.component/>
-                                            </Field>
-                                            <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
-                                        </div>
-                                    );
-                                case 'select':
-                                    // let defaultElement = null; // defaultValue={((editorFlags.isCreate && !defaultElement) || (!editorFlags.isCreate && defaultElement === initialFieldValues[currentObj.name]) ? defaultElement=option.value : '')}
-                                    return (
-                                        <div
-                                            key={currentObj.name}
-                                            className="form-group"
-                                        >
-                                            <label htmlFor={currentObj.name}>{currentObj.label}</label>
-                                            <Field 
-                                                name={currentObj.name}
-                                                as="select" 
-                                                disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
-                                                className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
-                                            >
-                                            {currentObj.select_elements.map((option) => (
-                                                <option
-                                                    key={option.value} value={option.value} 
-                                                >{option.title}</option>
-                                            ))}
-                                            </Field>
-                                            <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
-                                        </div>
-                                    );
-                                case 'text':
-                                case 'number':
-                                case 'date':
-                                case 'email':
-                                default:                                
-                                    return (
-                                        <div
-                                            key={currentObj.name}
-                                            className="form-group"
-                                        >
-                                            <label htmlFor={currentObj.name}>{currentObj.label}</label>
-                                            <Field 
-                                                key={currentObj.name} 
-                                                name={currentObj.name} 
-                                                type={currentObj.type} 
-                                                disabled={!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly)} 
-                                                className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
-                                            />
-                                            <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
-                                        </div>
-                                    )
-                            }
+                        Object.entries(editor.fieldElements).map(function(htmlElement) {
+                            return putOneFormfield(htmlElement, componentSelectFieldsOptions, editorFlags, errors, touched);
                         })
                     }
-                    <Table><tbody><tr>
-                    {!editorFlags.isRead &&
-                        <td align='left'>
-                            <button 
-                                key="SubmitButton"
-                                type="submit"
-                                className="btn btn-primary"
-                                disabled={isSubmitting}>{editorFlags.isCreate ? MSG_ACTION_CREATE : editorFlags.isDelete ? MSG_ACTION_DELETE : MSG_ACTION_UPDATE}
-                            </button>
-                            {isSubmitting &&
-                                <img src={WAIT_ANIMATION_IMG} alt={MSG_ALT_WAIT_ANIMATION}/>
-                            }
-                        </td>
-                    }
-                    <td align='left'>
-                        <button 
-                            key="CancelButton"
-                            type="button"
-                            className="btn btn-primary"
-                            disabled={isSubmitting}
-                            onClick={this.handleCancelClick}
-                        >
-                        {MSG_ACTION_CANCEL}
-                        </button>
-                    </td>
-                    </tr></tbody></Table>
+                    <Table>
+                        <tbody>
+                            <tr>
+                                {!editorFlags.isRead &&
+                                    <td align='left'>
+                                        <button 
+                                            key="SubmitButton"
+                                            type="submit"
+                                            className="btn btn-primary"
+                                            disabled={isSubmitting}>{editorFlags.isCreate ? MSG_ACTION_CREATE : editorFlags.isDelete ? MSG_ACTION_DELETE : MSG_ACTION_UPDATE}
+                                        </button>
+                                        {isSubmitting &&
+                                            <img src={WAIT_ANIMATION_IMG} alt={MSG_ALT_WAIT_ANIMATION}/>
+                                        }
+                                    </td>
+                                }
+                                <td align='left'>
+                                    <button 
+                                        key="CancelButton"
+                                        type="button"
+                                        className="btn btn-primary"
+                                        disabled={isSubmitting}
+                                        onClick={this.handleCancelClick}
+                                    >
+                                    {MSG_ACTION_CANCEL}
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </Table>
                     {status &&
                         <div className={'alert alert-danger'}>{status}</div>
                     }
@@ -812,7 +738,7 @@ export class GenericEditor extends React.Component {
         return this.dbService.createUpdateDelete(action, rowId, rowToSave);
     }
 
-
+    // Returns an array with the field names on fieldElements
     getFieldElementsListObj() {
         let fieldElementsListObj = Object.entries(this.state.editor.fieldElements)
             .map(function(key) {
@@ -823,19 +749,40 @@ export class GenericEditor extends React.Component {
         return fieldElementsListObj
     }
 
+    getComponentSelectFieldsOptions(fieldElements) { 
+        this.componentSelectFieldsOptionsPromises = Object.entries(fieldElements)
+            .filter(function(key) {
+                let currentObj = key[1];
+                return (currentObj.type === 'select_component' && typeof currentObj.dataPopulator !== 'undefined');
+            })
+            .map(function(key) {
+                let currentObj = key[1];
+                let dataPopulatorObj = new currentObj.dataPopulator();
+                return {
+                    name: currentObj.name,
+                    promiseResult: dataPopulatorObj.getData()
+                        .then( (options_array) => {
+                            return options_array;
+                        } )
+                };
+            }
+        );
+    }
+    
     getFieldElementsDbValues(datasetRaw, defaultValues = true) {
+        const { editor } = this.state;
         let dataset = {}
-        if (this.state.editor.type !== 'child_listing') {
+        if (editor.type !== 'child_listing') {
             dataset = Object.assign({}, dataset, datasetRaw);
         } else {
-            if(this.state.editor.subType === 'array') {
+            if(editor.subType === 'array') {
                 dataset = Object.assign({}, dataset, datasetRaw[0]);
             }
         }
         let dbService = this.dbService;
         let verifyElementExistence = this.verifyElementExistence;
         let fieldElementsListObj = {};
-        Object.entries(this.state.editor.fieldElements)
+        Object.entries(editor.fieldElements)
             .map(function(key) {
                 let currentObj = key[1];
                 if(currentObj.type === '_id') {
@@ -940,7 +887,10 @@ export class GenericSelectGenerator extends React.Component {
             // Still not ready...
             return ('');
         }
-        const selectOptions = this.state.db_rows.resultset;
+        const selectOptions = [
+            ...[{ _id: null, name: MSG_SELECT_AN_OPTION}],
+            ...this.state.db_rows.resultset
+        ];
         let dbService = this.dbService;
         const {filter, show_description} = this.state;
         return (
@@ -954,12 +904,185 @@ export class GenericSelectGenerator extends React.Component {
                     }
                     return (
                         <option 
-                            key={dbService.convertId(option._id)+'_key'}
+                            key={dbService.convertId(option._id)}
                             value={dbService.convertId(option._id)}
                         >{option.name}
                         </option>
                     );
                 })
         );
+    }
+}
+
+export class GenericSelectDataPopulator {
+
+    editor = null;
+    dbService = null;
+    props = null;
+
+    constructor(props = {}) {
+        this.props = props;
+        this.editor = this.getEditorData();
+        this.state = this.initialState();
+        this.dbService = new dbApiService({url: this.editor.dbApiUrl})
+    }
+
+    getEditorData() {
+        return {};
+    }
+
+    initialState() {
+        return {
+            db_rows: null,
+            filter: (typeof this.props.filter !== 'undefined' ? this.props.filter : null),
+            editor: this.editor,
+            title_field_name: (typeof this.props.title_field_name !== 'undefined' ? this.props.show_description : 'title'),
+            value_field_name: (typeof this.props.value_field_name !== 'undefined' ? this.props.value_field_name : 'value'),
+        };
+    }
+
+    getData() {
+        return this.dbService.getAll()
+            .then( (listingDataset) => {
+                // console_debug_log(this.state.editor.title+'-Select | fieldName: ' + this.props.fieldName + ' | listingDataset object:');
+                // console_debug_log(listingDataset);
+                this.state.db_rows = listingDataset;
+                return this.returnData();
+            })
+            .catch( (error) => {
+                console_debug_log(this.state.editor.title+'-Select | error object:');
+                console_debug_log(error);
+                return false;
+            });
+    }
+
+    returnData() {
+        let dbService = this.dbService;
+        const {filter, title_field_name, value_field_name, db_rows} = this.state;
+        let returnValue = [];
+        let i=0;
+        db_rows.resultset
+            .filter((option) => (
+                (filter === null ? true : dbService.convertId(option._id) === filter)
+            ))
+            .map((option) => {
+                let currentElement = {};
+                currentElement[title_field_name] = option.name;
+                currentElement[value_field_name] = dbService.convertId(option._id);
+                returnValue[i++] = currentElement;
+                return null;
+            })
+        return returnValue;
+    }
+}
+
+
+export function putSelectOptionsFromArray(select_array_elements, title_field_name='title', value_field_name='value') {
+    let emptyElement = {};
+    emptyElement[title_field_name] = MSG_SELECT_AN_OPTION;
+    emptyElement[value_field_name] = null;
+    const selectOptions = [
+        ...[emptyElement],
+        ...select_array_elements
+    ];
+    return selectOptions.map((option) => (
+        <option
+            key={option[value_field_name]}
+            value={option[value_field_name]} 
+        >{option[title_field_name]}</option>
+    ))
+}
+
+
+export function getSelectDescription(currentObj, dbRow) {
+    if(currentObj.type === 'select_component') {
+        return(
+            <currentObj.component filter={dbRow[currentObj.name].toString()} show_description={true} />
+        );
+    }
+    if (currentObj.type === 'select') {
+        return(
+            currentObj.select_elements
+                .filter((option) => (option.value === dbRow[currentObj.name].toString()))
+                .map((option) => option.title)
+        );
+    }
+    return dbRow[currentObj.name].toString();
+}
+
+
+export function putOneFormfield(htmlElement, componentSelectFieldsOptions, editorFlags, errors, touched) {
+    let currentObj = htmlElement[1];
+    const readOnlyfield = (!editorFlags.isEdit || (typeof currentObj.readonly !== 'undefined' && currentObj.readonly));
+    switch(currentObj.type) {
+        case 'select_component':
+            let array_options = [];
+            if(typeof currentObj.dataPopulator !== 'undefined') {
+                if (typeof componentSelectFieldsOptions[currentObj.name] !== 'undefined') {
+                    array_options = componentSelectFieldsOptions[currentObj.name];
+                }
+            }
+            return (
+                <div
+                    key={currentObj.name}
+                    className="form-group"
+                >
+                    <label htmlFor={currentObj.name}>{currentObj.label}</label>
+                    <Field 
+                        name={currentObj.name}
+                        as="select" 
+                        disabled={readOnlyfield} 
+                        className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
+                    >
+                        {
+                            typeof currentObj.dataPopulator !== 'undefined'
+                            ? putSelectOptionsFromArray(array_options)
+                            : <currentObj.component/>
+                        }
+                    </Field>
+                    <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
+                </div>
+            );
+        case 'select':
+            return (
+                <div
+                    key={currentObj.name}
+                    className="form-group"
+                >
+                    <label htmlFor={currentObj.name}>{currentObj.label}</label>
+                    <Field 
+                        name={currentObj.name}
+                        as="select" 
+                        disabled={readOnlyfield} 
+                        className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
+                    >
+                    {
+                        putSelectOptionsFromArray(currentObj.select_elements)
+                    }
+                    </Field>
+                    <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
+                </div>
+            );
+        case 'text':
+        case 'number':
+        case 'date':
+        case 'email':
+        default:                                
+            return (
+                <div
+                    key={currentObj.name}
+                    className="form-group"
+                >
+                    <label htmlFor={currentObj.name}>{currentObj.label}</label>
+                    <Field 
+                        key={currentObj.name} 
+                        name={currentObj.name} 
+                        type={currentObj.type} 
+                        disabled={readOnlyfield} 
+                        className={"form-control" + (errors[currentObj.name] && touched[currentObj.name] ? ' is-invalid' : '')}
+                    />
+                    <ErrorMessage name={currentObj.name} component="div" className="invalid-feedback" />
+                </div>
+            )
     }
 }

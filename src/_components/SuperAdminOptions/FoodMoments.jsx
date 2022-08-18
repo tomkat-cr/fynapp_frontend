@@ -1,6 +1,5 @@
-import React from 'react';
-import { console_debug_log } from '../../_services';
-import { GenericEditor, GenericSelectGenerator } from '../../_services/generic.editor.service';
+// import { console_debug_log } from '../../_services';
+import { GenericEditor, GenericSelectGenerator, GenericSelectDataPopulator } from '../../_services/generic.editor.service';
 
 
 export function FoodMoments_EditorData() {
@@ -40,6 +39,13 @@ export class FoodMoments extends GenericEditor {
 
 
 export class FoodMomentsSelect extends GenericSelectGenerator {
+
+    getEditorData() {
+        return FoodMoments_EditorData();
+    }
+}
+
+export class FoodMomentDataPopulator extends GenericSelectDataPopulator {
 
     getEditorData() {
         return FoodMoments_EditorData();

@@ -20,25 +20,30 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ---
 
 ### Fixes
+FA-34: Editor-Fix the <select/> to assume 1st <option/> value on Create.
+FA-34: Fix the case of Formnik, <Select/> and the Promises like FoodMomentsSelect.
+FA-59: Fix when session is timeout, save the current URL and after login, redirect to it.
+Fix Uncaught ReferenceError: process is not defined.
+Fix the DEBUG env var reading renaming it to REACT_APP_DEBUG.
+Fix listing screen `lost the resultset` when returns from data screen with child components.
 Fix the 'token is invalid' change issue.
-If BE returns that msg, it'll be replaced by MSG_ERROR_SESSION_EXPIRED
+If API returns the 'token expired' message, it'll be reported as 'Session expired'.
 
 ### Changes
 FA-58: "restart: unless-stopped" to the VPS docker compose configuration to let the containers stay active on server reboots.
-FA-6: Create menu option and editor for food_moments.
-FA-59: Fix when session is timeout, save the current URL and after login, redirect to it.
 Rename authentication.service to db.authentication.service.
-Fix Uncaught ReferenceError: process is not defined.
-Fix the DEBUG env var reading renaming it to REACT_APP_DEBUG.
-Generate UsersFoodTimes select options from component FoodMomentsSelect.
 Get URL parameters enhanced by getUrlParams() new function.
 Update `CHANGELOG.md` and `version.txt` files.
-Fix listing screen lost the resultset when returns from data screen with child components.
 Comment almost all the console_debug_log.
+DB Util: convertId() accepts null and blanks.
 
 ### New
 FA-33: Editor FE: add child listing to the edit screen
+Editor FE: child listing not showed on Create action.
+Generate UsersFoodTimes select options from component FoodMomentsSelect.
 FA-61: Editor FE: turn generic the select component FoodMomentsSelect
+FA-6: Create menu option and editor for food_moments.
+Enable UserHistory child listing to Users' option.
 
 
 ## 0.1.11 (2022-03-10)
