@@ -4,6 +4,7 @@
   "description": "Mediabros FynApp (frontend)",
   "author": "Carlos J. Ramirez (Mediabros)",
   "license": "Private",
+  "homepage": "/fynapp_frontend",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/tomkat-cr/fynapp_frontend.git"

@@ -1,0 +1,35 @@
+
+name: Deploy Fynapp Frontend
+
+on:
+  pull_request:
+    types: [ closed ]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ${{ matrix.os }}
+    name: Deploy Fynapp Frontend Staging
+    strategy:
+      matrix:
+        node-version: [16.x] 
+        os: [ubuntu-20.04]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Frontend npm ci, build
+        working-directory: .
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+          REACT_APP_DEBUG: ${{ secrets.REACT_APP_DEBUG }}
+        run: |
+          npm install
+          npm run build --if-present
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: ./build          

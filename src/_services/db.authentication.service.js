@@ -242,6 +242,6 @@ export class dbApiService {
     }
 
     convertId(id) {
-        return (id === null || id ==='' ? id : id.$oid);
+        return (id === null || id ==='' || typeof id === 'string' ? id : id.$oid);
     }
 }
