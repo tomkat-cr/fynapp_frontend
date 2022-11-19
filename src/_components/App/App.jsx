@@ -89,8 +89,8 @@ class App extends React.Component {
 function editorRoute(editor) {
     return (
         <>
-            <Route exact path={'/'+editor.baseUrl} component={editor.component} />
-            <Route exact path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
+            <Route path={'/'+editor.baseUrl} component={editor.component} />
+            <Route path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
         </>
     );
 }
