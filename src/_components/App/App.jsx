@@ -94,17 +94,18 @@ class App extends React.Component {
 
 function editorRoute(editor) {
     return (
-        <div>
+        <>
+            <PrivateRoute exact path={'/'+editor.baseUrl} component={editor.component} />
             <PrivateRoute exact path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
-        </div>
+        </>
     );
 }
 
 function editorMenuOption(editor) {
     return (
-        <div>
+        <>
             <NavDropdown.Item href={getPrefix()+'/'+editor.baseUrl}>{editor.title}</NavDropdown.Item>
-        </div>
+        </>
     );
 }
 
