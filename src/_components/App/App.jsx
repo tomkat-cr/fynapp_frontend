@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
+import { HashRouter as Router, Route } from 'react-router-dom';
 import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
 
 import { history } from '../../_helpers';
@@ -35,7 +35,8 @@ class App extends React.Component {
     render() {
         const { currentUser } = this.state;
         return (
-            <Router history={history}>
+            // <Router history={history} basename={process.env.PUBLIC_URL}>
+            <Router history={history} basename={process.env.REACT_APP_URI_PREFIX}>
                 <div>
                     {currentUser &&
                         <Navbar className="navbar-dark bg-dark" expand="lg">
@@ -70,8 +71,8 @@ class App extends React.Component {
                             <div className="row">
                                 <div className="col-md-6">
                                     <Route exact path="/" component={HomePage} />
-                                    <Route exact path={getPrefix()+"/"} component={HomePage} />
-                                    <Route path="/login" component={LoginPage} />
+                                    {/* <Route exact path={getPrefix()+"/"} component={HomePage} /> */}
+                                    {/* <Route path="/login" component={LoginPage} /> */}
                                     <Route path={getPrefix()+"/login"} component={LoginPage} />
                                     { editorRoute(Users_EditorData()) }
                                     { editorRoute(FoodMoments_EditorData()) }
@@ -89,7 +90,6 @@ class App extends React.Component {
 function editorRoute(editor) {
     return (
         <>
-            <Route path={'/'+editor.baseUrl} component={editor.component} />
             <Route path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
         </>
     );
