@@ -35,6 +35,7 @@ import { Table } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import fontawesome from '@fortawesome/fontawesome'
 import { faPlus, faEye, faEdit, faTrashAlt, faCheck, faList } from '@fortawesome/fontawesome-free-solid'
+import { LoginPage } from '../_components/LoginPage/LoginPage';
 fontawesome.library.add(faPlus, faEye, faEdit, faTrashAlt, faCheck, faList);
 
 export class GenericEditor extends React.Component {
@@ -293,7 +294,10 @@ export class GenericEditor extends React.Component {
     }
 
     render() {
-        const { action, currentRowDataset, listingDataset, error } = this.state;
+        const { currentUser, action, currentRowDataset, listingDataset, error } = this.state;
+        if (!currentUser) {
+            return <LoginPage />;
+        }
         let errorMessage = this.getErrorMessage(
             (action === ACTION_LIST ? listingDataset : currentRowDataset), 
             error

@@ -6,6 +6,7 @@ import { authenticationService } from '../../_services/db.authentication.service
 import { getUrlParams } from '../../_helpers/url-params';
 import { console_debug_log } from '../../_services/loging.service';
 import { WAIT_ANIMATION_IMG } from '../../_constants/general_constants';
+import { getPrefix, history } from '../../_helpers/history';
 
 class LoginPage extends React.Component {
 
@@ -16,12 +17,12 @@ class LoginPage extends React.Component {
 
         this.urlParams = getUrlParams(props);
         if( typeof this.urlParams.redirect === 'undefined') {
-            this.urlParams.redirect = '/';
+            this.urlParams.redirect = getPrefix()+'/';
         }
 
         // redirect to home if already logged in
         if (authenticationService.currentUserValue) { 
-            this.props.history.push(this.urlParams.redirect);
+            history.push(this.urlParams.redirect);
         }
     }
 
@@ -47,15 +48,15 @@ class LoginPage extends React.Component {
                             .then(
                                 user => {
                                     let from;
-                                    if (typeof this.props.location.state !== 'undefined') {
-                                        if (typeof this.props.location.state.from !== 'undefined') {
+                                    if (typeof this.props.location !== 'undefined') {
+                                        if (typeof this.props.location.state !== 'undefined') {
                                             from = this.props.location.state.from;
                                         }
                                     }
                                     if (!from) {
                                         from = { pathname: this.urlParams.redirect };
                                     }
-                                    this.props.history.push(from);
+                                    history.push(from);
                                 },
                                 error => {
                                     setSubmitting(false);

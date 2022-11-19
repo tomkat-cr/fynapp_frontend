@@ -4,7 +4,7 @@ import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
 
 import { history } from '../../_helpers';
 // import { console_debug_log } from '../../_services';
-import { PrivateRoute } from '../../_components/Helpers/PrivateRoute';
+// import { PrivateRoute } from '../../_components/Helpers/PrivateRoute';
 import { authenticationService } from '../../_services';
 import { HomePage } from '../../_components/HomePage/HomePage';
 import { Users_EditorData } from '../SuperAdminOptions/Users';
@@ -94,10 +94,7 @@ class App extends React.Component {
 
 function editorRoute(editor) {
     return (
-        <>
-            <PrivateRoute exact path={'/'+editor.baseUrl} component={editor.component} />
-            <PrivateRoute exact path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
-        </>
+        <Route exact path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
     );
 }
 
