@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
+import { HashRouter as Router, Route } from 'react-router-dom';
 import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
 
 import { history } from '../../_helpers';
@@ -35,7 +35,7 @@ class App extends React.Component {
     render() {
         const { currentUser } = this.state;
         return (
-            <Router history={history}>
+            <Router history={history} basename={process.env.PUBLIC_URL}>
                 <div>
                     {currentUser &&
                         <Navbar className="navbar-dark bg-dark" expand="lg">
@@ -89,7 +89,6 @@ class App extends React.Component {
 function editorRoute(editor) {
     return (
         <>
-            <Route path={'/'+editor.baseUrl} component={editor.component} />
             <Route path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
         </>
     );
