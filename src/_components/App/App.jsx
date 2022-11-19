@@ -69,16 +69,10 @@ class App extends React.Component {
                         <div className="container">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <div>
-                                        <Route exact path="/" component={HomePage} />
-                                        <Route exact path={getPrefix()+"/"} component={HomePage} />
-                                    </div>
-                                    <div>
-                                    </div>
-                                    <div>
-                                        <Route path="/login" component={LoginPage} />
-                                        <Route path={getPrefix()+"/login"} component={LoginPage} />
-                                    </div>
+                                    <Route exact path="/" component={HomePage} />
+                                    <Route exact path={getPrefix()+"/"} component={HomePage} />
+                                    <Route path="/login" component={LoginPage} />
+                                    <Route path={getPrefix()+"/login"} component={LoginPage} />
                                     { editorRoute(Users_EditorData()) }
                                     { editorRoute(FoodMoments_EditorData()) }
                                 </div>
@@ -94,7 +88,10 @@ class App extends React.Component {
 
 function editorRoute(editor) {
     return (
-        <Route exact path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
+        <>
+            <Route exact path={'/'+editor.baseUrl} component={editor.component} />
+            <Route exact path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
+        </>
     );
 }
 
