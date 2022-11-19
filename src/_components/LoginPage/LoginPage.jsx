@@ -46,7 +46,15 @@ class LoginPage extends React.Component {
                         authenticationService.login(username, password)
                             .then(
                                 user => {
-                                    const { from } = this.props.location.state || { from: { pathname: this.urlParams.redirect } };
+                                    let from;
+                                    if (typeof this.props.location.state !== 'undefined') {
+                                        if (typeof this.props.location.state.from !== 'undefined') {
+                                            from = this.props.location.state.from;
+                                        }
+                                    }
+                                    if (!from) {
+                                        from = { pathname: this.urlParams.redirect };
+                                    }
                                     this.props.history.push(from);
                                 },
                                 error => {

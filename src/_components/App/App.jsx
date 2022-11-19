@@ -29,7 +29,7 @@ class App extends React.Component {
 
     logout() {
         authenticationService.logout();
-        history.push('/login');
+        history.push(getPrefix()+'/login');
     }
 
     render() {
@@ -70,8 +70,8 @@ class App extends React.Component {
                             <div className="row">
                                 <div className="col-md-6">
                                     <div>
-                                        <PrivateRoute exact path="/" component={HomePage} />
-                                        <PrivateRoute exact path={getPrefix()+"/"} component={HomePage} />
+                                        <Route exact path="/" component={HomePage} />
+                                        <Route exact path={getPrefix()+"/"} component={HomePage} />
                                     </div>
                                     <div>
                                     </div>
