@@ -20,7 +20,6 @@ class HomePage extends React.Component {
             <div>
                 <h1>Hi {currentUser.firstName}!</h1>
                 {error &&
-                    // errorAndReEnter(errorMessage)
                     errorAndReEnter(error)
                 }
             </div>
