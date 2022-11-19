@@ -35,7 +35,8 @@ class App extends React.Component {
     render() {
         const { currentUser } = this.state;
         return (
-            <Router history={history} basename={process.env.PUBLIC_URL}>
+            // <Router history={history} basename={process.env.PUBLIC_URL}>
+            <Router history={history} basename={process.env.REACT_APP_URI_PREFIX}>
                 <div>
                     {currentUser &&
                         <Navbar className="navbar-dark bg-dark" expand="lg">
@@ -70,8 +71,8 @@ class App extends React.Component {
                             <div className="row">
                                 <div className="col-md-6">
                                     <Route exact path="/" component={HomePage} />
-                                    <Route exact path={getPrefix()+"/"} component={HomePage} />
-                                    <Route path="/login" component={LoginPage} />
+                                    {/* <Route exact path={getPrefix()+"/"} component={HomePage} /> */}
+                                    {/* <Route path="/login" component={LoginPage} /> */}
                                     <Route path={getPrefix()+"/login"} component={LoginPage} />
                                     { editorRoute(Users_EditorData()) }
                                     { editorRoute(FoodMoments_EditorData()) }
