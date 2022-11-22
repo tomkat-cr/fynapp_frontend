@@ -1,5 +1,6 @@
 import React from 'react';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
 
 import { history } from '../../_helpers';
@@ -35,17 +36,16 @@ class App extends React.Component {
     render() {
         const { currentUser } = this.state;
         return (
-            // <Router history={history} basename={process.env.PUBLIC_URL}>
-            <Router history={history} basename={process.env.REACT_APP_URI_PREFIX}>
+            <>
                 <div>
                     {currentUser &&
                         <Navbar className="navbar-dark bg-dark" expand="lg">
                             <Container>
-                                <Navbar.Brand href={getPrefix()+"/"}>FynApp</Navbar.Brand>
+                                <Navbar.Brand href={getPrefix(true)+"/"}>FynApp</Navbar.Brand>
                                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                                 <Navbar.Collapse id="basic-navbar-nav">
                                     <Nav className="me-auto">
-                                        <Nav.Link href={getPrefix()+"/"}>Home</Nav.Link>
+                                        <Nav.Link href={getPrefix(true)+"/"}>Home</Nav.Link>
                                         <NavDropdown title="Admin" id="basic-nav-dropdown">
                                             { editorMenuOption(Users_EditorData()) }
                                             { editorMenuOption(FoodMoments_EditorData()) }
@@ -70,18 +70,21 @@ class App extends React.Component {
                         <div className="container">
                             <div className="row">
                                 <div className="col-md-6">
-                                    <Route exact path="/" component={HomePage} />
-                                    {/* <Route exact path={getPrefix()+"/"} component={HomePage} /> */}
-                                    {/* <Route path="/login" component={LoginPage} /> */}
-                                    <Route path={getPrefix()+"/login"} component={LoginPage} />
-                                    { editorRoute(Users_EditorData()) }
-                                    { editorRoute(FoodMoments_EditorData()) }
+                                    {/* <Routes history={history} baseUrl={process.env.REACT_APP_URI_PREFIX}> */}
+                                    <Routes history={history}>
+                                        <>
+                                            <Route path="/" element={<HomePage/>} />
+                                            <Route path={getPrefix()+"/login"} element={<LoginPage/>} />
+                                            { editorRoute(Users_EditorData()) }
+                                            { editorRoute(FoodMoments_EditorData()) }
+                                        </>
+                                    </Routes>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </Router>
+            </>
         );
     }
 }
@@ -89,16 +92,15 @@ class App extends React.Component {
 
 function editorRoute(editor) {
     return (
-        <>
-            <Route path={getPrefix()+'/'+editor.baseUrl} component={editor.component} />
-        </>
+        <Route path={getPrefix()+'/'+editor.baseUrl} element={<editor.component/>} />
     );
 }
 
 function editorMenuOption(editor) {
     return (
         <>
-            <NavDropdown.Item href={getPrefix()+'/'+editor.baseUrl}>{editor.title}</NavDropdown.Item>
+            <NavDropdown.Item as={RouterLink} to={getPrefix()+'/'+editor.baseUrl}>{editor.title}</NavDropdown.Item>
+            {/* <RouterLink to={getPrefix()+'/'+editor.baseUrl}>{editor.title}</RouterLink> */}
         </>
     );
 }
