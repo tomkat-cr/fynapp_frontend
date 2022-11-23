@@ -41,11 +41,11 @@ class App extends React.Component {
                     {currentUser &&
                         <Navbar className="navbar-dark bg-dark" expand="lg">
                             <Container>
-                                <Navbar.Brand  as={RouterLink} to={getPrefix()+"/"}>FynApp</Navbar.Brand>
+                                <Navbar.Brand as={RouterLink} to={getPrefix()+"/"}>FynApp</Navbar.Brand>
                                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                                 <Navbar.Collapse id="basic-navbar-nav">
                                     <Nav className="me-auto">
-                                        <Nav.Link  as={RouterLink} to={getPrefix()+"/"}>Home</Nav.Link>
+                                        <Nav.Link as={RouterLink} to={getPrefix()+"/"}>Home</Nav.Link>
                                         <NavDropdown title="Admin" id="basic-nav-dropdown">
                                             { editorMenuOption(Users_EditorData()) }
                                             { editorMenuOption(FoodMoments_EditorData()) }
@@ -58,7 +58,7 @@ class App extends React.Component {
                                         <NavDropdown.Item as={RouterLink} to={getPrefix()+"#profile"}>Profile</NavDropdown.Item>
                                         <NavDropdown.Item as={RouterLink} to={getPrefix()+"#preferences"}>Preferences</NavDropdown.Item>
                                         <NavDropdown.Divider />
-                                        <NavDropdown.Item  as={RouterLink} onClick={this.logout} to={getPrefix()+'/login'}>Logout</NavDropdown.Item>
+                                        <NavDropdown.Item as={RouterLink} to={getPrefix()+'/login'} onClick={this.logout}>Logout</NavDropdown.Item>
                                     </NavDropdown>
                                 </Navbar.Collapse>
                             </Container>
@@ -74,6 +74,7 @@ class App extends React.Component {
                                     <Routes history={history}>
                                         <>
                                             <Route path="/" element={<HomePage/>} />
+                                            <Route path={getPrefix(true)+"/"} element={<HomePage/>} />
                                             <Route path={getPrefix()+"/login"} element={<LoginPage/>} />
                                             { editorRoute(Users_EditorData()) }
                                             { editorRoute(FoodMoments_EditorData()) }
