@@ -7,7 +7,7 @@ import { getUrlParams } from '../../_helpers/url-params';
 import { console_debug_log } from '../../_services/loging.service';
 import { WAIT_ANIMATION_IMG } from '../../_constants/general_constants';
 import { getPrefix, history } from '../../_helpers/history';
-
+import { Navigate } from 'react-router-dom';
 class LoginPage extends React.Component {
 
     urlParams = {}
@@ -15,18 +15,24 @@ class LoginPage extends React.Component {
     constructor(props) {
         super(props);
 
+        this.props = props;
         this.urlParams = getUrlParams(props);
         if( typeof this.urlParams.redirect === 'undefined') {
-            this.urlParams.redirect = getPrefix()+'/';
+            this.urlParams.redirect = getPrefix(true)+'/';
         }
 
-        // redirect to home if already logged in
-        if (authenticationService.currentUserValue) { 
-            history.push(this.urlParams.redirect);
-        }
+        // // redirect to home if already logged in
+        // if (authenticationService.currentUserValue) { 
+        //     // history.push(this.urlParams.redirect);
+        // }
     }
 
     render() {
+        // redirect to home if already logged in
+        if (authenticationService.currentUserValue) { 
+            return <Navigate to={{ pathname: this.urlParams.redirect, state: { from: this.props.location } }} />
+        }
+
         return (
             <div>
                 <div className="alert alert-info">

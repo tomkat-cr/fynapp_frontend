@@ -25,8 +25,6 @@ function login(username, password) {
     const requestOptions = {
         method: 'POST',
         headers: { "Authorization":  "Basic " + btoa(username + ":" + password) },
-        // headers: { "Authorization":  "Basic " + (username + ":" + password).toString('base64') },
-        // headers: { "Authorization":  "Basic " + Base64.btoa(username + ":" + password) },
     };
     let userService = new dbApiService({url: 'users'})
     return fetch(`${config.apiUrl}/users/login`, requestOptions)

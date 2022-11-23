@@ -7,11 +7,11 @@ import {
 import { authenticationService } from '../_services';
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import { history } from '.';
+import { history, getPrefix } from '.';
 
 export function logout() {
     authenticationService.logout();
-    history.push('/login?redirect='+window.location.pathname);
+    history.push(getPrefix(true)+'/login?redirect='+window.location.pathname);
 };
 
 export function refreshPage() {
