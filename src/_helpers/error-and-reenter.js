@@ -7,6 +7,7 @@ import {
 import { authenticationService } from '../_services';
 import React from 'react';
 import { Button } from 'react-bootstrap';
+import { Link as RouterLink } from 'react-router-dom';
 import { history, getPrefix } from '.';
 
 export function logout() {
@@ -36,7 +37,7 @@ export function errorLoginAgain(errorMessage) {
     return (
         <div>
             <br/>
-            <Button onClick={logout}>{MSG_ERROR_CLICK_TO_RELOGIN}</Button>
+            <Button as={RouterLink} to={getPrefix()+'/login'} onClick={logout}>{MSG_ERROR_CLICK_TO_RELOGIN}</Button>
         </div>
     );
 }
