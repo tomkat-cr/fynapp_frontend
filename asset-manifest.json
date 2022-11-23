@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/fynapp_frontend/static/js/main.72594c2f.js",
+    "main.js": "/fynapp_frontend/static/js/main.cd8014ac.js",
     "static/js/787.c5ca22ea.chunk.js": "/fynapp_frontend/static/js/787.c5ca22ea.chunk.js",
     "index.html": "/fynapp_frontend/index.html",
-    "main.72594c2f.js.map": "/fynapp_frontend/static/js/main.72594c2f.js.map",
+    "main.cd8014ac.js.map": "/fynapp_frontend/static/js/main.cd8014ac.js.map",
     "787.c5ca22ea.chunk.js.map": "/fynapp_frontend/static/js/787.c5ca22ea.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.72594c2f.js"
+    "static/js/main.cd8014ac.js"
   ]
 }
