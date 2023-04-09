@@ -5,8 +5,7 @@ export function authHeader() {
     const currentUser = authenticationService.currentUserValue;
     if (currentUser && currentUser.token) {
         return { Authorization: `Bearer ${currentUser.token}` };
-        // let headers = { 'x-access-tokens': currentUser.token };
-        // return headers;
+        // return { 'x-access-tokens': currentUser.token };
     } else {
         return {};
     }
