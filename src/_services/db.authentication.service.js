@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import { console_debug_log } from './loging.service';
 import { authHeader } from '../_helpers/auth-header';
 import {
@@ -24,7 +25,11 @@ function login(username, password) {
     }
     const requestOptions = {
         method: 'POST',
-        headers: { "Authorization":  "Basic " + btoa(username + ":" + password) },
+        headers: {
+            "Authorization":  "Basic " + Buffer.from(
+                username + ":" + password
+            ).toString('base64')
+        },
     };
     let userService = new dbApiService({url: 'users'})
     return fetch(`${config.apiUrl}/users/login`, requestOptions)
@@ -125,7 +130,7 @@ export class dbApiService {
             {}, 
             { 
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
             }, 
             this.props.authHeader
         );
@@ -152,9 +157,13 @@ export class dbApiService {
     getAll(params=[]) {
         const requestOptions = { method: 'GET', headers: this.props.authHeader };
         const urlQuery = this.paramsToUrlQuery(params);
-        // console_debug_log('dbServices::getAll() - urlQuery: ');
-        // console_debug_log(urlQuery);
-        let response = fetch(`${this.apiUrl}/${this.props.url}${urlQuery}`, requestOptions)
+        const url = `${this.apiUrl}/${this.props.url}${urlQuery}`;
+console_debug_log('dbServices::getAll() - url: '+url);
+console_debug_log('dbServices::getAll() - urlQuery: ');
+console_debug_log(urlQuery);
+console_debug_log('dbServices::getAll() - requestOptions: ');
+console_debug_log(requestOptions);
+        let response = fetch(url, requestOptions)
                 .then(handleResponse, handleFetchError);
         return response;
     }
