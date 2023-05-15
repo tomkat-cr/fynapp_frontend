@@ -16,15 +16,6 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ### Breaks
 
 
-## 0.1.3 (2023-04-09)
----
-
-### Changes
-Replace deprecated "btoa" with "Buffer" [FA-62].
-Use "Authorization: Bearer" instead of "x-access-tokens" in login [FA-67].
-Capitalized 'Token is invalid'
-
-
 ## 0.1.2 (2022-03-16)
 ---
 

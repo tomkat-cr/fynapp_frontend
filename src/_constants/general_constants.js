@@ -1,5 +1,5 @@
 // Security
-export const MSG_ERROR_INVALID_TOKEN = 'Token is invalid';
+export const MSG_ERROR_INVALID_TOKEN = 'token is invalid';
 export const MSG_ERROR_SESSION_EXPIRED = 'Session expired.';
 export const MSG_ERROR_CLICK_TO_RELOGIN = 'Click here to login again.';
 export const MSG_ERROR_CLICK_TO_RETRY = 'Click here to retry';
