@@ -10,11 +10,7 @@ export function authHeader() {
         console_debug_log(`authHeader | ERROR: ${error}`);
     }
     if (currentUser && currentUser.token) {
-        if (process.env.REACT_APP_X_TOKEN) {
-            return { 'x-access-tokens': currentUser.token };
-        } else {
-            return { Authorization: `Bearer ${currentUser.token}` };
-        }
+        return { 'x-access-tokens': currentUser.token };
     } else {
         return {};
     }
