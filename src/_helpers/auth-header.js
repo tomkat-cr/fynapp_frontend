@@ -1,11 +1,20 @@
+import { console_debug_log } from '../_services';
 import { authenticationService } from '../_services/db.authentication.service';
 
 export function authHeader() {
     // Returns authorization header with jwt token
-    const currentUser = authenticationService.currentUserValue;
+    let currentUser = null;
+    try {
+        currentUser = authenticationService.currentUserValue;
+    } catch (error) {
+        console_debug_log(`authHeader | ERROR: ${error}`);
+    }
     if (currentUser && currentUser.token) {
-        return { Authorization: `Bearer ${currentUser.token}` };
-        // return { 'x-access-tokens': currentUser.token };
+        if (process.env.REACT_APP_X_TOKEN) {
+            return { 'x-access-tokens': currentUser.token };
+        } else {
+            return { Authorization: `Bearer ${currentUser.token}` };
+        }
     } else {
         return {};
     }
